@@ -130,25 +130,49 @@ export default defineConfig({
       routes: [
         {
           path: '/information',
-          redirect: '/information/department',
+          redirect: '/information/department/list',
         },
         {
           name: '科室管理',
           icon: 'smile',
-          path: '/information/department',
-          component: './information/department',
+          path: '/information/department/list',
+          component: './information/department/list',
+        },
+        {
+          path: '/information/department/add',
+          component: './information/department/add',
+        },
+        {
+          path: '/information/department/detail',
+          component: './information/department/detail',
         },
         {
           name: '药品管理',
           icon: 'smile',
-          path: '/information/medicine',
-          component: './information/medicine',
+          path: '/information/medicine/list',
+          component: './information/medicine/list',
+        },
+        {
+          path: '/information/medicine/add',
+          component: './information/medicine/add',
+        },
+        {
+          path: '/information/medicine/detail',
+          component: './information/medicine/detail',
         },
         {
           name: '疾病管理',
           icon: 'smile',
-          path: '/information/disease',
-          component: './information/disease',
+          path: '/information/disease/list',
+          component: './information/disease/list',
+        },
+        {
+          path: '/information/disease/add',
+          component: './information/disease/add',
+        },
+        {
+          path: '/information/disease/detail',
+          component: './information/disease/detail',
         },
       ],
     },
@@ -185,7 +209,7 @@ export default defineConfig({
       path: '/download',
       icon: 'form',
       name: '数据下载',
-      component: './download'
+      component: './download/list'
     },
     {
       path: '/form',
