@@ -4,7 +4,7 @@ import React, { useState, useRef } from 'react';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-form';
+import { ModalForm, ProFormText, ProFormTextArea, ProFormSelect } from '@ant-design/pro-form';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import type { FormValueType } from './components/UpdateForm';
@@ -92,9 +92,9 @@ const TableList: React.FC = () => {
 
   const columns: ProColumns<TableListItem>[] = [
     {
-      title: '规则名称',
+      title: '疾病编码',
       dataIndex: 'name',
-      tip: '规则名称是唯一的 key',
+      tip: '疾病编码是唯一的 key',
       render: (dom, entity) => {
         return (
           <a
@@ -109,19 +109,12 @@ const TableList: React.FC = () => {
       },
     },
     {
-      title: '描述',
+      title: '疾病名称',
       dataIndex: 'desc',
       valueType: 'textarea',
     },
     {
-      title: '服务调用次数',
-      dataIndex: 'callNo',
-      sorter: true,
-      hideInForm: true,
-      renderText: (val: string) => `${val}万`,
-    },
-    {
-      title: '状态',
+      title: '疾病所属科室',
       dataIndex: 'status',
       hideInForm: true,
       valueEnum: {
@@ -144,23 +137,9 @@ const TableList: React.FC = () => {
       },
     },
     {
-      title: '上次调度时间',
-      sorter: true,
-      dataIndex: 'updatedAt',
-      valueType: 'dateTime',
-      renderFormItem: (item, { defaultRender, ...rest }, form) => {
-        const status = form.getFieldValue('status');
-
-        if (`${status}` === '0') {
-          return false;
-        }
-
-        if (`${status}` === '3') {
-          return <Input {...rest} placeholder="请输入异常原因！" />;
-        }
-
-        return defaultRender(item);
-      },
+      title: '疾病描述',
+      dataIndex: 'desc',
+      valueType: 'textarea',
     },
     {
       title: '操作',
@@ -174,17 +153,17 @@ const TableList: React.FC = () => {
             setCurrentRow(record);
           }}
         >
-          配置
+          编辑
         </a>,
         <a key="subscribeAlert" href="https://procomponents.ant.design/">
-          订阅警报
+          删除
         </a>,
       ],
     },
   ];
 
   return (
-    <PageContainer title="医生工作台">
+    <PageContainer title="疾病管理">
       <ProTable<TableListItem, TableListPagination>
         actionRef={actionRef}
         rowKey="key"
@@ -204,45 +183,9 @@ const TableList: React.FC = () => {
         ]}
         request={rule}
         columns={columns}
-        rowSelection={{
-          onChange: (_, selectedRows) => {
-            setSelectedRows(selectedRows);
-          },
-        }}
       />
-      {selectedRowsState?.length > 0 && (
-        <FooterToolbar
-          extra={
-            <div>
-              已选择{' '}
-              <a
-                style={{
-                  fontWeight: 600,
-                }}
-              >
-                {selectedRowsState.length}
-              </a>{' '}
-              项 &nbsp;&nbsp;
-              <span>
-                服务调用次数总计 {selectedRowsState.reduce((pre, item) => pre + item.callNo!, 0)} 万
-              </span>
-            </div>
-          }
-        >
-          <Button
-            onClick={async () => {
-              await handleRemove(selectedRowsState);
-              setSelectedRows([]);
-              actionRef.current?.reloadAndRest?.();
-            }}
-          >
-            批量删除
-          </Button>
-          <Button type="primary">批量审批</Button>
-        </FooterToolbar>
-      )}
       <ModalForm
-        title="新建规则"
+        title="新增疾病"
         width="400px"
         visible={createModalVisible}
         onVisibleChange={handleModalVisible}
@@ -257,16 +200,51 @@ const TableList: React.FC = () => {
         }}
       >
         <ProFormText
+          label="疾病编码"
+          placeholder="请输入疾病编码"
           rules={[
             {
               required: true,
-              message: '规则名称为必填项',
+              message: '疾病编码为必填项',
             },
           ]}
           width="md"
           name="name"
         />
-        <ProFormTextArea width="md" name="desc" />
+        <ProFormText
+          label="疾病名称"
+          placeholder="请输入疾病名称"
+          rules={[
+            {
+              required: true,
+              message: '疾病名称为必填项',
+            },
+          ]}
+          width="md"
+          name="name"
+        />
+        <ProFormSelect
+          width="md"
+          name="country"
+          label="疾病所属科室"
+          rules={[
+            {
+              required: true,
+              message: '请选择所属科室',
+            },
+          ]}
+          options={[
+            {
+              label: '中国',
+              value: 'China',
+            },
+          ]}
+        />
+        <ProFormTextArea 
+          width="md" 
+          name="desc"
+          label="疾病描述" 
+        />
       </ModalForm>
       <UpdateForm
         onSubmit={async (value) => {

@@ -60,6 +60,23 @@ const HomePage: React.FC = () => {
     salesPieData = salesType === 'online' ? data?.salesTypeDataOnline : data?.salesTypeDataOffline;
   }
 
+  const visitsNumber = [{
+    x: '2022-3-1',
+    y: 100
+  }, {
+    x: '2022-3-2',
+    y: 290
+  }, {
+    x: '2022-3-3',
+    y: 350
+  }, {
+    x: '2022-3-4',
+    y: 420
+  }, {
+    x: '2022-3-5',
+    y: 550
+  }]
+
   return (
     <GridContent>
       <>
@@ -70,7 +87,7 @@ const HomePage: React.FC = () => {
         <Suspense fallback={null}>
           <SalesCard
             rangePickerValue={rangePickerValue}
-            salesData={data?.salesData || []}
+            salesData={data?.salesData || visitsNumber}
             isActive={isActive}
             handleRangePickerChange={handleRangePickerChange}
             loading={loading}

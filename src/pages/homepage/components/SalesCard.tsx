@@ -1,9 +1,8 @@
 import { Card, Col, DatePicker, Row, Tabs } from 'antd';
 import type { RangePickerProps } from 'antd/es/date-picker/generatePicker';
 import type moment from 'moment';
-import { Column } from '@ant-design/charts';
+import { Column, Line } from '@ant-design/charts';
 
-import numeral from 'numeral';
 import type { DataItem } from '../data.d';
 import styles from '../style.less';
 
@@ -89,46 +88,26 @@ const SalesCard = ({
                   }}
                   title={{
                     visible: true,
-                    text: '销售趋势',
+                    text: '就诊趋势',
                     style: {
                       fontSize: 14,
                     },
                   }}
                   meta={{
                     y: {
-                      alias: '销售量',
+                      alias: '就诊人数',
                     },
                   }}
                 />
               </div>
             </Col>
-            {/* <Col xl={8} lg={12} md={12} sm={24} xs={24}>
-              <div className={styles.salesRank}>
-                <h4 className={styles.rankingTitle}>门店销售额排名</h4>
-                <ul className={styles.rankingList}>
-                  {rankingListData.map((item, i) => (
-                    <li key={item.title}>
-                      <span className={`${styles.rankingItemNumber} ${i < 3 ? styles.active : ''}`}>
-                        {i + 1}
-                      </span>
-                      <span className={styles.rankingItemTitle} title={item.title}>
-                        {item.title}
-                      </span>
-                      <span className={styles.rankingItemValue}>
-                        {numeral(item.total).format('0,0')}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </Col> */}
           </Row>
         </TabPane>
         <TabPane tab="访问量" key="views">
           <Row>
             <Col xl={16} lg={12} md={12} sm={24} xs={24}>
               <div className={styles.salesBar}>
-                <Column
+                <Line
                   height={300}
                   forceFit
                   data={salesData as any}
@@ -161,24 +140,6 @@ const SalesCard = ({
                 />
               </div>
             </Col>
-            {/* <Col xl={8} lg={12} md={12} sm={24} xs={24}>
-              <div className={styles.salesRank}>
-                <h4 className={styles.rankingTitle}>门店访问量排名</h4>
-                <ul className={styles.rankingList}>
-                  {rankingListData.map((item, i) => (
-                    <li key={item.title}>
-                      <span className={`${styles.rankingItemNumber} ${i < 3 ? styles.active : ''}`}>
-                        {i + 1}
-                      </span>
-                      <span className={styles.rankingItemTitle} title={item.title}>
-                        {item.title}
-                      </span>
-                      <span>{numeral(item.total).format('0,0')}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </Col> */}
           </Row>
         </TabPane>
       </Tabs>
