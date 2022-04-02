@@ -37,7 +37,44 @@ const SalesCard = ({
 }) => (
   <Card loading={loading} bordered={false} bodyStyle={{ padding: 0 }}>
     <div className={styles.salesCard}>
-      <Tabs
+    <Row>
+      <Col xl={24} lg={24} md={24} sm={24} xs={24}>
+        <div className={styles.salesBar}>
+          <Line
+            height={300}
+            forceFit
+            data={salesData as any}
+            xField="x"
+            yField="y"
+            xAxis={{
+              visible: true,
+              title: {
+                visible: false,
+              },
+            }}
+            yAxis={{
+              visible: true,
+              title: {
+                visible: false,
+              },
+            }}
+            title={{
+              visible: true,
+              text: '访问量趋势',
+              style: {
+                fontSize: 14,
+              },
+            }}
+            meta={{
+              y: {
+                alias: '访问量',
+              },
+            }}
+          />
+        </div>
+      </Col>
+    </Row>
+      {/* <Tabs
         tabBarExtraContent={
           <div className={styles.salesExtraWrap}>
             <div className={styles.salesExtra}>
@@ -142,7 +179,7 @@ const SalesCard = ({
             </Col>
           </Row>
         </TabPane>
-      </Tabs>
+      </Tabs> */}
     </div>
   </Card>
 );

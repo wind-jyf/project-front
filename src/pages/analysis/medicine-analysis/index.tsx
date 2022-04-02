@@ -5,8 +5,8 @@ import type { RangePickerProps } from 'antd/es/date-picker/generatePicker';
 import type moment from 'moment';
 import IntroduceRow from './components/IntroduceRow';
 import SalesCard from './components/SalesCard';
+import MedicineUse from './components/medicineUse';
 import { useRequest } from 'umi';
-
 import { fakeChartData } from './service';
 import PageLoading from './components/PageLoading';
 import type { TimeType } from './components/SalesCard';
@@ -80,19 +80,21 @@ const HomePage: React.FC = () => {
   return (
     <GridContent>
       <>
+        <Suspense fallback={null}>
+            <SalesCard
+              rangePickerValue={rangePickerValue}
+              salesData={data?.salesData || visitsNumber}
+              isActive={isActive}
+              handleRangePickerChange={handleRangePickerChange}
+              loading={loading}
+              selectDate={selectDate}
+            />
+        </Suspense>
         <Suspense fallback={<PageLoading />}>
           <IntroduceRow loading={loading} visitData={data?.visitData || []} />
         </Suspense>
-
-        <Suspense fallback={null}>
-          <SalesCard
-            rangePickerValue={rangePickerValue}
-            salesData={data?.salesData || visitsNumber}
-            isActive={isActive}
-            handleRangePickerChange={handleRangePickerChange}
-            loading={loading}
-            selectDate={selectDate}
-          />
+        <Suspense fallback={<PageLoading />}>
+          <MedicineUse loading={loading} visitData={data?.visitData || []} />
         </Suspense>
       </>
     </GridContent>

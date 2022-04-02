@@ -1,6 +1,6 @@
-import { Pie } from '@ant-design/charts';
+import { Pie, Column } from '@ant-design/charts';
 import { Col, Row } from 'antd';
-import type { DataItem } from '../data.d';
+import type { DataItem } from '../data';
 import styles from '../style.less';
 
 const data = [
@@ -62,15 +62,62 @@ const topColResponsiveProps = {
   style: { marginBottom: 24 },
 };
 
+const visitsNumber = [{
+  x: '2022-3-1',
+  y: 100
+}, {
+  x: '2022-3-2',
+  y: 290
+}, {
+  x: '2022-3-3',
+  y: 350
+}, {
+  x: '2022-3-4',
+  y: 420
+}, {
+  x: '2022-3-5',
+  y: 550
+}]
+
 const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: DataItem[] }) => (
   <>
     <div className={styles.title}>
       <div></div>
-      <span>费用-药品分析</span>
+      <span>使用量-药品分析</span>
     </div>
     <Row gutter={24} className={styles.medicineRow}>
       <Col {...topColResponsiveProps} span={24}>
-        <Pie {...config} className={styles.agePie} />
+        <Column
+          height={300}
+          forceFit
+          data={visitsNumber as any}
+          xField="x"
+          yField="y"
+          xAxis={{
+            visible: true,
+            title: {
+              visible: false,
+            },
+          }}
+          yAxis={{
+            visible: true,
+            title: {
+              visible: false,
+            },
+          }}
+          title={{
+            visible: true,
+            text: '访问量趋势',
+            style: {
+              fontSize: 14,
+            },
+          }}
+          meta={{
+            y: {
+              alias: '访问量',
+            },
+          }}
+          />
       </Col>
     </Row>
   </>

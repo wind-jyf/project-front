@@ -5,6 +5,7 @@ import type { RangePickerProps } from 'antd/es/date-picker/generatePicker';
 import type moment from 'moment';
 import IntroduceRow from './components/IntroduceRow';
 import SalesCard from './components/SalesCard';
+import GenderRowPie from './components/genderRowPie';
 import { useRequest } from 'umi';
 
 import { fakeChartData } from './service';
@@ -80,10 +81,6 @@ const HomePage: React.FC = () => {
   return (
     <GridContent>
       <>
-        <Suspense fallback={<PageLoading />}>
-          <IntroduceRow loading={loading} visitData={data?.visitData || []} />
-        </Suspense>
-
         <Suspense fallback={null}>
           <SalesCard
             rangePickerValue={rangePickerValue}
@@ -93,6 +90,12 @@ const HomePage: React.FC = () => {
             loading={loading}
             selectDate={selectDate}
           />
+        </Suspense>
+        <Suspense fallback={<PageLoading />}>
+          <IntroduceRow loading={loading} visitData={data?.visitData || []} />
+        </Suspense>
+        <Suspense fallback={<PageLoading />}>
+          <GenderRowPie loading={loading} visitData={data?.visitData || []} />
         </Suspense>
       </>
     </GridContent>

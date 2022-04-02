@@ -1,12 +1,6 @@
-import { InfoCircleOutlined } from '@ant-design/icons';
-import { TinyArea, Pie } from '@ant-design/charts';
-import { Col, Row, Tooltip } from 'antd';
-
-import numeral from 'numeral';
-import { ChartCard, Field } from './Charts';
-import type { DataItem } from '../data.d';
-import Trend from './Trend';
-import Yuan from '../utils/Yuan';
+import { Pie } from '@ant-design/charts';
+import { Col, Row } from 'antd';
+import type { DataItem } from '../data';
 import styles from '../style.less';
 
 const topColResponsiveProps = {
@@ -14,7 +8,7 @@ const topColResponsiveProps = {
   sm: 12,
   md: 12,
   lg: 12,
-  xl: 8,
+  xl: 12,
   style: { marginBottom: 24 },
 };
 
@@ -72,17 +66,14 @@ const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: Dat
   <>
     <div className={styles.title}>
       <div></div>
-      <span>年龄-科室分析</span>
+      <span>性别-科室分析</span>
     </div>
     <Row gutter={24} className={styles.ageAnlysis}>
-      <Col {...topColResponsiveProps} span={6}>
+      <Col {...topColResponsiveProps} span={12}>
         <Pie {...config} className={styles.agePie} />
       </Col>
 
-      <Col {...topColResponsiveProps} span={6}>
-        <Pie {...config} className={styles.agePie} />
-      </Col>
-      <Col {...topColResponsiveProps} span={6}>
+      <Col {...topColResponsiveProps} span={12}>
         <Pie {...config} className={styles.agePie} />
       </Col>
     </Row>
