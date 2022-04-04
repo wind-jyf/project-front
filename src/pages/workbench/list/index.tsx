@@ -1,6 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, message, Input, Drawer } from 'antd';
 import React, { useState, useRef } from 'react';
+import { history } from 'umi';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
@@ -196,7 +197,7 @@ const TableList: React.FC = () => {
             type="primary"
             key="primary"
             onClick={() => {
-              handleModalVisible(true);
+              history.push('/workbench/add');
             }}
           >
             <PlusOutlined /> 新建
@@ -241,54 +242,6 @@ const TableList: React.FC = () => {
           <Button type="primary">批量审批</Button>
         </FooterToolbar>
       )}
-      <ModalForm
-        title="新建规则"
-        width="400px"
-        visible={createModalVisible}
-        onVisibleChange={handleModalVisible}
-        onFinish={async (value) => {
-          const success = await handleAdd(value as TableListItem);
-          if (success) {
-            handleModalVisible(false);
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
-          }
-        }}
-      >
-        <ProFormText
-          rules={[
-            {
-              required: true,
-              message: '规则名称为必填项',
-            },
-          ]}
-          width="md"
-          name="name"
-        />
-        <ProFormTextArea width="md" name="desc" />
-      </ModalForm>
-      <UpdateForm
-        onSubmit={async (value) => {
-          const success = await handleUpdate(value, currentRow);
-
-          if (success) {
-            handleUpdateModalVisible(false);
-            setCurrentRow(undefined);
-
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
-          }
-        }}
-        onCancel={() => {
-          handleUpdateModalVisible(false);
-          setCurrentRow(undefined);
-        }}
-        updateModalVisible={updateModalVisible}
-        values={currentRow || {}}
-      />
-
       <Drawer
         width={600}
         visible={showDetail}
