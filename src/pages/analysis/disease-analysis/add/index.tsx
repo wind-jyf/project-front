@@ -51,9 +51,24 @@ const BasicForm: FC<Record<string, any>> = () => {
           initialValues={{ public: '1' }}
           onFinish={onFinish}
         >
+          <ProFormSelect
+            label="性别"
+            width="md"
+            name="性别"
+            options={[
+              {
+                value: '1',
+                label: '同事甲',
+              },
+              {
+                value: '2',
+                label: '同事乙',
+              }
+            ]}
+          />
           <ProFormText
             width="md"
-            label="标题"
+            label="年龄"
             name="title"
             rules={[
               {
@@ -61,138 +76,32 @@ const BasicForm: FC<Record<string, any>> = () => {
                 message: '请输入标题',
               },
             ]}
-            placeholder="给目标起个名字"
+            placeholder="请输入年龄"
           />
-          <ProFormDateRangePicker
-            label="起止日期"
+          <ProFormText
             width="md"
-            name="date"
+            label="职业"
+            name="title"
             rules={[
               {
                 required: true,
-                message: '请选择起止日期',
+                message: '请输入职业',
               },
             ]}
-            placeholder={['开始日期', '结束日期']}
+            placeholder="请输入职业"
           />
           <ProFormTextArea
-            label="目标描述"
+            label="主诉症状"
             width="xl"
             name="goal"
             rules={[
               {
                 required: true,
-                message: '请输入目标描述',
+                message: '请输入主诉',
               },
             ]}
-            placeholder="请输入你的阶段性工作目标"
+            placeholder="请输入主诉"
           />
-
-          <ProFormTextArea
-            label="衡量标准"
-            name="standard"
-            width="xl"
-            rules={[
-              {
-                required: true,
-                message: '请输入衡量标准',
-              },
-            ]}
-            placeholder="请输入衡量标准"
-          />
-
-          <ProFormText
-            width="md"
-            label={
-              <span>
-                客户
-                <em className={styles.optional}>（选填）</em>
-              </span>
-            }
-            tooltip="目标的服务对象"
-            name="client"
-            placeholder="请描述你服务的客户，内部客户直接 @姓名／工号"
-          />
-
-          <ProFormText
-            width="md"
-            label={
-              <span>
-                邀评人
-                <em className={styles.optional}>（选填）</em>
-              </span>
-            }
-            name="invites"
-            placeholder="请直接 @姓名／工号，最多可邀请 5 人"
-          />
-
-          <ProFormDigit
-            label={
-              <span>
-                权重
-                <em className={styles.optional}>（选填）</em>
-              </span>
-            }
-            name="weight"
-            placeholder="请输入"
-            min={0}
-            max={100}
-            width="xs"
-            fieldProps={{
-              formatter: (value) => `${value || 0}%`,
-              parser: (value) => (value ? value.replace('%', '') : '0'),
-            }}
-          />
-
-          <ProFormRadio.Group
-            options={[
-              {
-                value: '1',
-                label: '公开',
-              },
-              {
-                value: '2',
-                label: '部分公开',
-              },
-              {
-                value: '3',
-                label: '不公开',
-              },
-            ]}
-            label="目标公开"
-            help="客户、邀评人默认被分享"
-            name="publicType"
-          />
-          <ProFormDependency name={['publicType']}>
-            {({ publicType }) => {
-              return (
-                <ProFormSelect
-                  width="md"
-                  name="publicUsers"
-                  fieldProps={{
-                    style: {
-                      margin: '8px 0',
-                      display: publicType && publicType === '2' ? 'block' : 'none',
-                    },
-                  }}
-                  options={[
-                    {
-                      value: '1',
-                      label: '同事甲',
-                    },
-                    {
-                      value: '2',
-                      label: '同事乙',
-                    },
-                    {
-                      value: '3',
-                      label: '同事丙',
-                    },
-                  ]}
-                />
-              );
-            }}
-          </ProFormDependency>
         </ProForm>
       </Card>
     </PageContainer>

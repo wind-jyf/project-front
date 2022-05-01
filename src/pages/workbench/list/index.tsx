@@ -93,8 +93,8 @@ const TableList: React.FC = () => {
 
   const columns: ProColumns<TableListItem>[] = [
     {
-      title: '规则名称',
-      dataIndex: 'name',
+      title: 'ID',
+      dataIndex: 'ID',
       tip: '规则名称是唯一的 key',
       render: (dom, entity) => {
         return (
@@ -110,58 +110,25 @@ const TableList: React.FC = () => {
       },
     },
     {
-      title: '描述',
-      dataIndex: 'desc',
-      valueType: 'textarea',
-    },
-    {
-      title: '服务调用次数',
+      title: '姓名',
       dataIndex: 'callNo',
       sorter: true,
       hideInForm: true,
       renderText: (val: string) => `${val}万`,
     },
     {
-      title: '状态',
-      dataIndex: 'status',
+      title: '性别',
+      dataIndex: 'callNo',
+      sorter: true,
       hideInForm: true,
-      valueEnum: {
-        0: {
-          text: '关闭',
-          status: 'Default',
-        },
-        1: {
-          text: '运行中',
-          status: 'Processing',
-        },
-        2: {
-          text: '已上线',
-          status: 'Success',
-        },
-        3: {
-          text: '异常',
-          status: 'Error',
-        },
-      },
+      renderText: (val: string) => `${val}万`,
     },
     {
-      title: '上次调度时间',
+      title: '年龄',
+      dataIndex: 'callNo',
       sorter: true,
-      dataIndex: 'updatedAt',
-      valueType: 'dateTime',
-      renderFormItem: (item, { defaultRender, ...rest }, form) => {
-        const status = form.getFieldValue('status');
-
-        if (`${status}` === '0') {
-          return false;
-        }
-
-        if (`${status}` === '3') {
-          return <Input {...rest} placeholder="请输入异常原因！" />;
-        }
-
-        return defaultRender(item);
-      },
+      hideInForm: true,
+      renderText: (val: string) => `${val}万`,
     },
     {
       title: '操作',
@@ -175,10 +142,7 @@ const TableList: React.FC = () => {
             setCurrentRow(record);
           }}
         >
-          配置
-        </a>,
-        <a key="subscribeAlert" href="https://procomponents.ant.design/">
-          订阅警报
+          查看详情
         </a>,
       ],
     },

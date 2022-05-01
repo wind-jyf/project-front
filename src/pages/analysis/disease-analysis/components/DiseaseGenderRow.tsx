@@ -1,7 +1,7 @@
 import { Pie } from '@ant-design/charts';
 import { Col, Row, Button } from 'antd';
 import { history } from 'umi';
-import type { DataItem } from '../data.d';
+import type { DataItem } from '../data';
 import styles from '../style.less';
 
 const topColResponsiveProps = {
@@ -9,7 +9,7 @@ const topColResponsiveProps = {
   sm: 8,
   md: 8,
   lg: 8,
-  xl: 8,
+  xl: 12,
   style: { marginBottom: 24 },
 };
 
@@ -72,15 +72,11 @@ const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: Dat
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
         <div className={styles.title}>
           <div></div>
-          <span>年龄-疾病分析</span>
+          <span>性别-疾病分析</span>
         </div>
-        <Button type='primary' shape='round' onClick={handleGoAnalysis}>点击预测</Button>
       </div>
     
       <Row gutter={24} className={styles.diseaseAnalysis}>
-        <Col {...topColResponsiveProps} span={6}>
-            <Pie {...config} />
-        </Col>
         <Col {...topColResponsiveProps} span={6}>
             <Pie {...config} />
         </Col>

@@ -43,18 +43,16 @@ const StepResult: React.FC<{
     <Result
       status="success"
       title="操作成功"
-      subTitle="预计两小时内到账"
       extra={
         <>
           <Button type="primary" onClick={props.onFinish}>
-            再转一笔
+            继续看诊
           </Button>
-          <Button>查看账单</Button>
+          <Button>查看病历</Button>
         </>
       }
       className={styles.result}
     >
-      {props.children}
     </Result>
   );
 };
@@ -97,82 +95,89 @@ const StepForm: React.FC<Record<string, any>> = () => {
         >
           <StepsForm.StepForm<StepDataType>
             formRef={formRef}
-            title="填写转账信息"
+            title="填写个人基本信息"
             initialValues={stepData}
             onFinish={async (values) => {
               setStepData(values);
               return true;
             }}
           >
+            <ProFormText
+              label="姓名"
+              name="name"
+              rules={[
+                { required: true, message: '请填写姓名' },
+              ]}
+              placeholder="请填写姓名"
+            />
+            <ProFormText
+              label="年龄"
+              name="age"
+              rules={[
+                { required: true, message: '请填写年龄' },
+              ]}
+              placeholder="请填写年龄"
+            />
             <ProFormSelect
-              label="付款账户"
-              width="md"
-              name="payAccount"
-              rules={[{ required: true, message: '请选择付款账户' }]}
+              label="性别"
+              name="gender"
+              rules={[{ required: true, message: '请选择性别' }]}
               valueEnum={{
-                'ant-design@alipay.com': 'ant-design@alipay.com',
+                femal: '女',
+                man: '男',
               }}
             />
-
-            <ProForm.Group title="收款账户" size={8}>
-              <ProFormSelect
-                name="receiverMode"
-                rules={[{ required: true, message: '请选择付款账户' }]}
-                valueEnum={{
-                  alipay: '支付宝',
-                  bank: '银行账户',
-                }}
-              />
-              <ProFormText
-                name="receiverAccount"
-                rules={[
-                  { required: true, message: '请输入收款人账户' },
-                  { type: 'email', message: '账户名应为邮箱格式' },
-                ]}
-                placeholder="test@example.com"
-              />
-            </ProForm.Group>
-            <ProFormText
-              label="收款人姓名"
-              width="md"
-              name="receiverName"
-              rules={[{ required: true, message: '请输入收款人姓名' }]}
-              placeholder="请输入收款人姓名"
-            />
-            <ProFormDigit
-              label="转账金额"
-              name="amount"
-              width="md"
-              rules={[
-                { required: true, message: '请输入转账金额' },
-                {
-                  pattern: /^(\d+)((?:\.\d+)?)$/,
-                  message: '请输入合法金额数字',
-                },
-              ]}
-              placeholder="请输入金额"
-              fieldProps={{
-                prefix: '￥',
+            <ProFormSelect
+              label="性别"
+              name="gender"
+              rules={[{ required: true, message: '请选择性别' }]}
+              valueEnum={{
+                femal: '女',
+                man: '男',
               }}
             />
           </StepsForm.StepForm>
 
-          <StepsForm.StepForm title="确认转账信息">
+          <StepsForm.StepForm title="填写病历信息">
             <div className={styles.result}>
-              <Alert
-                closable
-                showIcon
-                message="确认转账后，资金将直接打入对方账户，无法退回。"
-                style={{ marginBottom: 24 }}
+              <ProFormText
+                label="主诉"
+                name="age"
+                rules={[
+                  { required: true, message: '请填写主诉' },
+                ]}
+                placeholder="请填写主诉"
               />
-              <StepDescriptions stepData={stepData} bordered />
-              <Divider style={{ margin: '24px 0' }} />
-              <ProFormText.Password
-                label="支付密码"
-                width="md"
-                name="password"
-                required={false}
-                rules={[{ required: true, message: '需要支付密码才能进行支付' }]}
+              <ProFormText
+                label="病人症状"
+                name="age"
+                rules={[
+                  { required: true, message: '请填写病人症状' },
+                ]}
+                placeholder="请填写病人症状"
+              />
+              <ProFormSelect
+                label="病人所属科室"
+                name="gender"
+                rules={[{ required: true, message: '请选择科室' }]}
+                valueEnum={{
+                  femal: '女',
+                  man: '男',
+                }}
+              />
+              <ProFormSelect
+                label="开具药品"
+                name="gender"
+                rules={[{ required: true, message: '请选择药品' }]}
+                valueEnum={{
+                  femal: '女',
+                  man: '男',
+                }}
+              />
+              <ProFormText
+                label="医嘱"
+                name="age"
+                placeholder="请填写医嘱"
               />
             </div>
           </StepsForm.StepForm>

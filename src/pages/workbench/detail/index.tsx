@@ -157,44 +157,19 @@ const Basic: FC = () => {
   return (
     <PageContainer title="病历详情" breadcrumb={breadCrumb}>
       <Card bordered={false}>
-        <Descriptions title="退款申请" style={{ marginBottom: 32 }}>
-          <Descriptions.Item label="取货单号">1000000000</Descriptions.Item>
-          <Descriptions.Item label="状态">已取货</Descriptions.Item>
-          <Descriptions.Item label="销售单号">1234123421</Descriptions.Item>
-          <Descriptions.Item label="子订单">3214321432</Descriptions.Item>
+        <Descriptions title="病人基本信息" style={{ marginBottom: 32 }}>
+          <Descriptions.Item label="姓名">1000000000</Descriptions.Item>
+          <Descriptions.Item label="性别">已取货</Descriptions.Item>
+          <Descriptions.Item label="年龄">1234123421</Descriptions.Item>
         </Descriptions>
         <Divider style={{ marginBottom: 32 }} />
-        <Descriptions title="用户信息" style={{ marginBottom: 32 }}>
-          <Descriptions.Item label="用户姓名">付小小</Descriptions.Item>
-          <Descriptions.Item label="联系电话">18100000000</Descriptions.Item>
-          <Descriptions.Item label="常用快递">菜鸟仓储</Descriptions.Item>
-          <Descriptions.Item label="取货地址">浙江省杭州市西湖区万塘路18号</Descriptions.Item>
-          <Descriptions.Item label="备注">无</Descriptions.Item>
+        <Descriptions title="病历信息" style={{ marginBottom: 32 }} layout="vertical">
+          <Descriptions.Item label="主诉">付小小</Descriptions.Item>
+          <Descriptions.Item label="病人症状">18100000000</Descriptions.Item>
+          <Descriptions.Item label="所属科室">菜鸟仓储</Descriptions.Item>
+          <Descriptions.Item label="使用药品">浙江省杭州市西湖区万塘路18号</Descriptions.Item>
+          <Descriptions.Item label="医嘱">无</Descriptions.Item>
         </Descriptions>
-        <Divider style={{ marginBottom: 32 }} />
-        <div className={styles.title}>退货商品</div>
-        <ProTable
-          style={{ marginBottom: 24 }}
-          pagination={false}
-          search={false}
-          loading={loading}
-          options={false}
-          toolBarRender={false}
-          dataSource={goodsData}
-          columns={goodsColumns}
-          rowKey="id"
-        />
-        <div className={styles.title}>退货进度</div>
-        <ProTable
-          style={{ marginBottom: 16 }}
-          pagination={false}
-          loading={loading}
-          search={false}
-          options={false}
-          toolBarRender={false}
-          dataSource={basicProgress}
-          columns={progressColumns}
-        />
       </Card>
     </PageContainer>
   );

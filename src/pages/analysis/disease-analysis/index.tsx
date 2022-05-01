@@ -4,6 +4,7 @@ import { GridContent } from '@ant-design/pro-layout';
 import type { RangePickerProps } from 'antd/es/date-picker/generatePicker';
 import type moment from 'moment';
 import IntroduceRow from './components/IntroduceRow';
+import DiseaseGenderRow from './components/DiseaseGenderRow';
 import { useRequest } from 'umi';
 
 import { fakeChartData } from './service';
@@ -81,6 +82,9 @@ const HomePage: React.FC = () => {
       <>
         <Suspense fallback={<PageLoading />}>
           <IntroduceRow loading={loading} visitData={data?.visitData || []} />
+        </Suspense>
+        <Suspense fallback={<PageLoading />}>
+          <DiseaseGenderRow loading={loading} visitData={data?.visitData || []} />
         </Suspense>
       </>
     </GridContent>
