@@ -5,13 +5,14 @@ import React, { useState, useRef } from 'react';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-form';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import type { FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
 import { rule, addRule, updateRule, removeRule } from './service';
 import type { TableListItem, TableListPagination } from './data';
+import { getMedicineList } from '../service';
+import { medicineCategoryMap, medicineFormMap, MedicineCategory } from '../constants';
 /**
  * 添加节点
  *
@@ -90,87 +91,70 @@ const TableList: React.FC = () => {
   const columns: ProColumns<TableListItem>[] = [
     {
       title: '药品编码',
-      dataIndex: 'name',
-      render: (dom, entity) => {
-        return (
-          <a
-            onClick={() => {
-              setCurrentRow(entity);
-              setShowDetail(true);
-            }}
-          >
-            {dom}
-          </a>
-        );
-      },
+      dataIndex: 'medicine_code',
     },
     {
       title: '药品名称',
-      dataIndex: 'desc',
+      dataIndex: 'medicine_name',
       valueType: 'textarea',
     },
     {
       title: '生产厂家',
-      dataIndex: 'callNo',
-      sorter: true,
-      hideInForm: true,
-      renderText: (val: string) => `${val}万`,
+      dataIndex: 'medicine_manufacturer',
     },
     {
       title: '药品类型',
-      dataIndex: 'status',
+      dataIndex: 'medicine_category',
+      render: (value: any) => medicineCategoryMap[value],
       hideInForm: true,
-      valueEnum: {
-        0: {
-          text: '关闭',
-          status: 'Default',
-        },
-        1: {
-          text: '运行中',
-          status: 'Processing',
-        },
-        2: {
-          text: '已上线',
-          status: 'Success',
-        },
-      },
+      // valueEnum: {
+      //   0: {
+      //     text: '关闭',
+      //     status: 'Default',
+      //   },
+      //   1: {
+      //     text: '运行中',
+      //     status: 'Processing',
+      //   },
+      //   2: {
+      //     text: '已上线',
+      //     status: 'Success',
+      //   },
+      // },
     },
     {
       title: '药品规格',
-      dataIndex: 'desc',
+      dataIndex: 'medicine_specifications',
       valueType: 'textarea',
     },
     {
       title: '药品单价',
-      dataIndex: 'desc',
+      dataIndex: 'medicine_price',
       valueType: 'textarea',
     },
     {
       title: '药品剂型',
-      dataIndex: 'desc',
+      dataIndex: 'medicine_form',
       valueType: 'textarea',
+      render: (value: any) => medicineFormMap[value],
     },
     {
       title: '库存',
-      dataIndex: 'desc',
+      dataIndex: 'medicine_rest_total',
       valueType: 'textarea',
     },
     {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
-      render: (_, record) => [
+      render: (_, record: any) => [
         <a
-          key="config"
-          onClick={() => {
-            handleUpdateModalVisible(true);
-            setCurrentRow(record);
-          }}
+          href={`/information/medicine/add?action=update&id=${record.id}`}
         >
           编辑
         </a>,
-        <a key="subscribeAlert" href="https://procomponents.ant.design/">
-          删除
+        <a href={`/information/medicine/add?action=detail&id=${record.id}`}>
+          详情
         </a>,
       ],
     },
@@ -189,13 +173,13 @@ const TableList: React.FC = () => {
             type="primary"
             key="primary"
             onClick={() => {
-              history.push('/information/medicine/add')
+              history.push('/information/medicine/add');
             }}
           >
             <PlusOutlined /> 新建
           </Button>,
         ]}
-        request={rule}
+        request={getMedicineList}
         columns={columns}
       />
       <UpdateForm

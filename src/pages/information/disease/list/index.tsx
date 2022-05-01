@@ -1,21 +1,25 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, message, Input, Drawer } from 'antd';
-import React, { useState, useRef } from 'react';
+import { Button, message, Input, Drawer, Select, Form, Modal } from 'antd';
+import React, { useState, useRef, useEffect } from 'react';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { ModalForm, ProFormText, ProFormTextArea, ProFormSelect } from '@ant-design/pro-form';
+import { ModalForm, ProFormText, ProFormTextArea, ProFormSelect} from '@ant-design/pro-form';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import type { FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
 import { rule, addRule, updateRule, removeRule } from './service';
+import { getDepartMentList, addDisease, updateDisease, getDiseaseList } from '../service';
 import type { TableListItem, TableListPagination } from './data';
 /**
  * 添加节点
  *
  * @param fields
  */
+
+const { Option } = Select;
+
 
 const handleAdd = async (fields: TableListItem) => {
   const hide = message.loading('正在添加');
@@ -81,64 +85,45 @@ const handleRemove = async (selectedRows: TableListItem[]) => {
 const TableList: React.FC = () => {
   /** 新建窗口的弹窗 */
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
-  /** 分布更新窗口的弹窗 */
-
-  const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
-  const [showDetail, setShowDetail] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
-  const [currentRow, setCurrentRow] = useState<TableListItem>();
-  const [selectedRowsState, setSelectedRows] = useState<TableListItem[]>([]);
-  /** 国际化配置 */
+  const [currentRow, setCurrentRow] = useState<any>();
+  const [departMentOptions, setDepartMentOptions] = useState<any[]>([]);
+  const [form] = Form.useForm();
+  const searchDepartMentList = async () => {
+    const { data = [] } = await getDepartMentList({});
+    setDepartMentOptions(data.map((item: any) => {
+      return {
+        value: item.department_code,
+        text: item.department_name
+      }
+    }))
+  }
+  useEffect(() => {
+    searchDepartMentList();
+  }, [])
 
   const columns: ProColumns<TableListItem>[] = [
     {
       title: '疾病编码',
-      dataIndex: 'name',
+      dataIndex: 'disease_code',
       tip: '疾病编码是唯一的 key',
-      render: (dom, entity) => {
-        return (
-          <a
-            onClick={() => {
-              setCurrentRow(entity);
-              setShowDetail(true);
-            }}
-          >
-            {dom}
-          </a>
-        );
-      },
     },
     {
       title: '疾病名称',
-      dataIndex: 'desc',
+      dataIndex: 'disease_name',
       valueType: 'textarea',
     },
     {
       title: '疾病所属科室',
-      dataIndex: 'status',
+      dataIndex: 'disease_ref_department',
       hideInForm: true,
-      valueEnum: {
-        0: {
-          text: '关闭',
-          status: 'Default',
-        },
-        1: {
-          text: '运行中',
-          status: 'Processing',
-        },
-        2: {
-          text: '已上线',
-          status: 'Success',
-        },
-        3: {
-          text: '异常',
-          status: 'Error',
-        },
-      },
+      render: (value) => {
+        return departMentOptions.find((item: any) => item.value === value)?.text;
+      }
     },
     {
       title: '疾病描述',
-      dataIndex: 'desc',
+      dataIndex: 'disease_description',
       valueType: 'textarea',
     },
     {
@@ -149,19 +134,37 @@ const TableList: React.FC = () => {
         <a
           key="config"
           onClick={() => {
-            handleUpdateModalVisible(true);
+            handleModalVisible(true);
             setCurrentRow(record);
           }}
         >
           编辑
         </a>,
-        <a key="subscribeAlert" href="https://procomponents.ant.design/">
-          删除
-        </a>,
       ],
     },
   ];
 
+  const handleSubmit = async () => {
+    try {
+      form.validateFields();
+      if (currentRow) {
+        await updateDisease({
+          id: currentRow.id,
+          ...form.getFieldsValue() || {}
+        });
+        message.success('更新成功');
+
+      } else {
+        await addDisease(form.getFieldsValue());
+        message.success('添加成功');
+      }
+      handleModalVisible(false);
+      actionRef.current && actionRef.current.reload();
+    } catch (e: any) {
+      message.error(e.message);
+    }
+  }
+  const options = departMentOptions.map(d => <Option key={d.value}>{d.text}</Option>);
   return (
     <PageContainer title="疾病管理">
       <ProTable<TableListItem, TableListPagination>
@@ -181,24 +184,23 @@ const TableList: React.FC = () => {
             <PlusOutlined /> 新建
           </Button>,
         ]}
-        request={rule}
+        request={getDiseaseList}
         columns={columns}
       />
-      <ModalForm
-        title="新增疾病"
+      <Modal
+        title="新建科室"
         width="400px"
         visible={createModalVisible}
-        onVisibleChange={handleModalVisible}
-        onFinish={async (value) => {
-          const success = await handleAdd(value as TableListItem);
-          if (success) {
-            handleModalVisible(false);
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
-          }
-        }}
+        onCancel={() => {handleModalVisible(false); setCurrentRow(undefined)}}
+        
+        onOk={() => { handleSubmit() }} 
+        destroyOnClose={true}     
       >
+        <Form
+          initialValues={currentRow || {}}
+          form={form}
+          preserve={false}
+        >
         <ProFormText
           label="疾病编码"
           placeholder="请输入疾病编码"
@@ -209,7 +211,7 @@ const TableList: React.FC = () => {
             },
           ]}
           width="md"
-          name="name"
+          name="disease_code"
         />
         <ProFormText
           label="疾病名称"
@@ -221,11 +223,11 @@ const TableList: React.FC = () => {
             },
           ]}
           width="md"
-          name="name"
+          name="disease_name"
         />
-        <ProFormSelect
-          width="md"
-          name="country"
+        <Form.Item
+          style={{ width: '330px' }}
+          name="disease_ref_department"
           label="疾病所属科室"
           rules={[
             {
@@ -233,63 +235,21 @@ const TableList: React.FC = () => {
               message: '请选择所属科室',
             },
           ]}
-          options={[
-            {
-              label: '中国',
-              value: 'China',
-            },
-          ]}
-        />
+        >
+          <Select
+            showSearch
+            onSearch={searchDepartMentList}
+          >
+            {options}
+          </Select>
+        </Form.Item>
         <ProFormTextArea 
           width="md" 
-          name="desc"
+          name="disease_description"
           label="疾病描述" 
         />
-      </ModalForm>
-      <UpdateForm
-        onSubmit={async (value) => {
-          const success = await handleUpdate(value, currentRow);
-
-          if (success) {
-            handleUpdateModalVisible(false);
-            setCurrentRow(undefined);
-
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
-          }
-        }}
-        onCancel={() => {
-          handleUpdateModalVisible(false);
-          setCurrentRow(undefined);
-        }}
-        updateModalVisible={updateModalVisible}
-        values={currentRow || {}}
-      />
-
-      <Drawer
-        width={600}
-        visible={showDetail}
-        onClose={() => {
-          setCurrentRow(undefined);
-          setShowDetail(false);
-        }}
-        closable={false}
-      >
-        {currentRow?.name && (
-          <ProDescriptions<TableListItem>
-            column={2}
-            title={currentRow?.name}
-            request={async () => ({
-              data: currentRow || {},
-            })}
-            params={{
-              id: currentRow?.name,
-            }}
-            columns={columns as ProDescriptionsItemProps<TableListItem>[]}
-          />
-        )}
-      </Drawer>
+         </Form>
+      </Modal>
     </PageContainer>
   );
 };

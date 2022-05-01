@@ -111,14 +111,6 @@ export default defineConfig({
           component: './information/department/list',
         },
         {
-          path: '/information/department/add',
-          component: './information/department/add',
-        },
-        {
-          path: '/information/department/detail',
-          component: './information/department/detail',
-        },
-        {
           name: '药品管理',
           icon: 'smile',
           path: '/information/medicine/list',
