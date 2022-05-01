@@ -1,16 +1,19 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, message, Input, Drawer } from 'antd';
+import { Button, message, Modal, Form } from 'antd';
 import React, { useState, useRef } from 'react';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { ModalForm, ProFormText, ProFormTextArea, ProFormSelect } from '@ant-design/pro-form';
+import ProForm, { ModalForm, ProFormText, ProFormTextArea, ProFormSelect } from '@ant-design/pro-form';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import type { FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
 import { rule, addRule, updateRule, removeRule } from './service';
+import { addDepartMent, getDepartMentList, updateDepartMent } from '../service';
 import type { TableListItem, TableListPagination } from './data';
+import { departmenCategoryOptions, departmentCategoryMap } from '../consts';
+import { useForm } from 'antd/es/form/Form';
 /**
  * 添加节点
  *
@@ -21,7 +24,7 @@ const handleAdd = async (fields: TableListItem) => {
   const hide = message.loading('正在添加');
 
   try {
-    await addRule({ ...fields });
+    await addDepartMent({ ...fields });
     hide();
     message.success('添加成功');
     return true;
@@ -60,60 +63,31 @@ const handleUpdate = async (fields: FormValueType, currentRow?: TableListItem) =
  * @param selectedRows
  */
 
-const handleRemove = async (selectedRows: TableListItem[]) => {
-  const hide = message.loading('正在删除');
-  if (!selectedRows) return true;
-
-  try {
-    await removeRule({
-      key: selectedRows.map((row) => row.key),
-    });
-    hide();
-    message.success('删除成功，即将刷新');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('删除失败，请重试');
-    return false;
-  }
-};
 
 const TableList: React.FC = () => {
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
-
-  const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
-  const [showDetail, setShowDetail] = useState<boolean>(false);
+  const [formValues, setFormValues] = useState();
+  
   const actionRef = useRef<ActionType>();
-  const [currentRow, setCurrentRow] = useState<TableListItem>();
+  const [currentRow, setCurrentRow] = useState<any>();
+  const [form] = Form.useForm();
 
   const columns: ProColumns<TableListItem>[] = [
     {
       title: '科室编码',
-      dataIndex: 'name',
-      render: (dom, entity) => {
-        return (
-          <a
-            onClick={() => {
-              setCurrentRow(entity);
-              setShowDetail(true);
-            }}
-          >
-            {dom}
-          </a>
-        );
-      },
+      dataIndex: 'department_code',
     },
     {
       title: '科室名称',
-      dataIndex: 'desc',
+      dataIndex: 'department_name',
       valueType: 'textarea',
     },
     {
       title: '科室分类',
-      dataIndex: 'callNo',
+      dataIndex: 'department_category',
       sorter: true,
       hideInForm: true,
-      renderText: (val: string) => `${val}万`,
+      renderText: (val: string) => departmentCategoryMap[val],
     },
     {
       title: '操作',
@@ -123,24 +97,43 @@ const TableList: React.FC = () => {
         <a
           key="config"
           onClick={() => {
-            handleUpdateModalVisible(true);
+            handleModalVisible(true);
             setCurrentRow(record);
+            setFormValues(currentRow);
           }}
         >
           编辑
-        </a>,
-        <a key="subscribeAlert" href="https://procomponents.ant.design/">
-          删除
         </a>,
       ],
     },
   ];
 
+  const handleSubmit = async () => {
+    try {
+      form.validateFields();
+      if (currentRow) {
+        await updateDepartMent({
+          id: currentRow.id,
+          ...form.getFieldsValue() || {}
+        });
+        message.success('更新成功');
+
+      } else {
+        await addDepartMent(form.getFieldsValue());
+        message.success('添加成功');
+      }
+      handleModalVisible(false);
+      actionRef.current && actionRef.current.reload();
+    } catch (e: any) {
+      message.error(e.message);
+    }
+  }
+
   return (
     <PageContainer title="科室管理">
       <ProTable<TableListItem, TableListPagination>
         actionRef={actionRef}
-        rowKey="key"
+        rowKey="id"
         search={{
           labelWidth: 120,
         }}
@@ -155,110 +148,62 @@ const TableList: React.FC = () => {
             <PlusOutlined /> 新建
           </Button>,
         ]}
-        request={rule}
+        request={getDepartMentList}
         columns={columns}
       />
-      <ModalForm
+      <Modal
         title="新建科室"
         width="400px"
         visible={createModalVisible}
-        onVisibleChange={handleModalVisible}
-        onFinish={async (value) => {
-          const success = await handleAdd(value as TableListItem);
-          if (success) {
-            handleModalVisible(false);
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
-          }
-        }}
+        onCancel={() => {handleModalVisible(false); setCurrentRow(undefined)}}
+        
+        onOk={() => { handleSubmit() }} 
+        destroyOnClose={true}      
       >
-        <ProFormText
-          label="科室编码"
-          placeholder="请输入科室编码"
-          rules={[
-            {
-              required: true,
-              message: '科室编码为必填项',
-            },
-          ]}
-          width="md"
-          name="name"
-        />
-        <ProFormText
-          label="科室名称"
-          placeholder="请输入科室名称"
-          rules={[
-            {
-              required: true,
-              message: '科室名称为必填项',
-            },
-          ]}
-          width="md"
-          name="name"
-        />
-        <ProFormSelect
-          width="md"
-          name="country"
-          label="科室类别"
-          rules={[
-            {
-              required: true,
-              message: '请选择科室类别',
-            },
-          ]}
-          options={[
-            {
-              label: '中国',
-              value: 'China',
-            },
-          ]}
-        />
-      </ModalForm>
-      <UpdateForm
-        onSubmit={async (value) => {
-          const success = await handleUpdate(value, currentRow);
-
-          if (success) {
-            handleUpdateModalVisible(false);
-            setCurrentRow(undefined);
-
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
-          }
-        }}
-        onCancel={() => {
-          handleUpdateModalVisible(false);
-          setCurrentRow(undefined);
-        }}
-        updateModalVisible={updateModalVisible}
-        values={currentRow || {}}
-      />
-
-      <Drawer
-        width={600}
-        visible={showDetail}
-        onClose={() => {
-          setCurrentRow(undefined);
-          setShowDetail(false);
-        }}
-        closable={false}
-      >
-        {currentRow?.name && (
-          <ProDescriptions<TableListItem>
-            column={2}
-            title={currentRow?.name}
-            request={async () => ({
-              data: currentRow || {},
-            })}
-            params={{
-              id: currentRow?.name,
-            }}
-            columns={columns as ProDescriptionsItemProps<TableListItem>[]}
+        <Form
+          initialValues={currentRow || {}}
+          form={form}
+          preserve={false}
+        >
+          <ProFormText
+            label="科室编码"
+            placeholder="请输入科室编码"
+            rules={[
+              {
+                required: true,
+                message: '科室编码为必填项',
+              },
+            ]}
+            width="md"
+            name="department_code"
+            disabled={!!currentRow}
           />
-        )}
-      </Drawer>
+          <ProFormText
+            label="科室名称"
+            placeholder="请输入科室名称"
+            rules={[
+              {
+                required: true,
+                message: '科室名称为必填项',
+              },
+            ]}
+            width="md"
+            name="department_name"
+          />
+          <ProFormSelect
+            width="md"
+            name="department_category"
+            label="科室类别"
+            rules={[
+              {
+                required: true,
+                message: '请选择科室类别',
+              },
+            ]}
+            options={departmenCategoryOptions}
+          />
+        </Form>
+      </Modal>
     </PageContainer>
   );
 };

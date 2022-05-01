@@ -8,22 +8,22 @@
  */
 export default {
   dev: {
-    '/api/': {
-      target: 'https://preview.pro.ant.design',
+    '/crophe': {
+      target: 'localhost:3001/api/crophe/',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
   },
   test: {
     '/api/': {
-      target: 'https://preview.pro.ant.design',
-      changeOrigin: true,
-      pathRewrite: { '^': '' },
+      target: 'localhost:3001/api/crophe/',
+      // changeOrigin: true,
+      // pathRewrite: { '^': '' },
     },
   },
   pre: {
     '/api/': {
-      target: 'your pre url',
+      target: 'localhost:3001/api/crophe/',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
