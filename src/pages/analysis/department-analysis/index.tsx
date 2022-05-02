@@ -8,10 +8,11 @@ import SalesCard from './components/SalesCard';
 import GenderRowPie from './components/genderRowPie';
 import { useRequest } from 'umi';
 
-import { fakeChartData } from './service';
+import { getDepartMentAnalysis } from './service';
 import PageLoading from './components/PageLoading';
 import type { TimeType } from './components/SalesCard';
 import { getTimeDistance } from './utils/utils';
+
 import styles from './style.less';
 
 type RangePickerValue = RangePickerProps<moment.Moment>['value'];
@@ -24,7 +25,7 @@ const HomePage: React.FC = () => {
     getTimeDistance('year'),
   );
 
-  const { loading, data } = useRequest(fakeChartData);
+  const { loading, data } = useRequest(getDepartMentAnalysis);
 
   const selectDate = (type: TimeType) => {
     setRangePickerValue(getTimeDistance(type));
@@ -92,10 +93,10 @@ const HomePage: React.FC = () => {
           />
         </Suspense>
         <Suspense fallback={<PageLoading />}>
-          <IntroduceRow loading={loading} visitData={data?.visitData || []} />
+          <IntroduceRow loading={loading} visitData={data || []} />
         </Suspense>
         <Suspense fallback={<PageLoading />}>
-          <GenderRowPie loading={loading} visitData={data?.visitData || []} />
+          <GenderRowPie loading={loading} visitData={data || []} />
         </Suspense>
       </>
     </GridContent>

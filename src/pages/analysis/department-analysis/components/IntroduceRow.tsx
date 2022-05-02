@@ -1,7 +1,9 @@
 import { Pie } from '@ant-design/charts';
 import { Col, Row, Tooltip } from 'antd';
+import { useEffect, useState } from 'react';
 
 import type { DataItem } from '../data.d';
+import { departmentCategoryMap } from '../../../information/department/consts';
 import styles from '../style.less';
 
 const topColResponsiveProps = {
@@ -13,35 +15,9 @@ const topColResponsiveProps = {
   style: { marginBottom: 24 },
 };
 
-const data = [
-  {
-    type: '分类一',
-    value: 27,
-  },
-  {
-    type: '分类二',
-    value: 25,
-  },
-  {
-    type: '分类三',
-    value: 18,
-  },
-  {
-    type: '分类四',
-    value: 15,
-  },
-  {
-    type: '分类五',
-    value: 10,
-  },
-  {
-    type: '其他',
-    value: 5,
-  },
-];
 const config: any = {
   appendPadding: 10,
-  data,
+  data: [],
   angleField: 'value',
   colorField: 'type',
   radius: 0.9,
@@ -63,7 +39,72 @@ const config: any = {
   
 };
 
-const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: DataItem[] }) => (
+const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: DataItem[] }) => {
+  const [youngAgeData, setYoungAgeData] = useState<any[]>([]);
+  const [youngConfig, setYoungConfig] = useState(config);
+  const [middleAgeData, setMiddleAgeData] = useState<any[]>([]);
+  const [middleConfig, setMiddleConfig] = useState(config);
+  const [oldAgeData, setOldAgeData] = useState<any[]>([]);
+  const [oldConfig, setOldConfig] = useState(config);
+  const handleYoungAgeData = () => {
+    visitData.forEach((item: any) => {
+      const hasType = youngAgeData.find(youngAgeDataDataItem => youngAgeDataDataItem.type === departmentCategoryMap[item.department_category]);
+      if (hasType) {
+        hasType.value += item.department_ref_youth_total;
+      } else {
+        youngAgeData.push({
+          type: departmentCategoryMap[item.department_category],
+          value: item.department_ref_youth_total
+        })
+      }
+    });
+    setYoungConfig({
+      ...config,
+      data: youngAgeData
+    })
+  }
+  const handleMiddleAgeData = () => {
+    visitData.forEach((item: any) => {
+      const hasType = middleAgeData.find(middleAgeDataDataItem => middleAgeDataDataItem.type === departmentCategoryMap[item.department_category]);
+      if (hasType) {
+        hasType.value += item.department_ref_middle_total;
+      } else {
+        middleAgeData.push({
+          type: departmentCategoryMap[item.department_category],
+          value: item.department_ref_middle_total
+        })
+      }
+    });
+    setMiddleConfig({
+      ...config,
+      data: middleAgeData
+    })
+  }
+  const handleOldAgeData = () => {
+    visitData.forEach((item: any) => {
+      const hasType = oldAgeData.find(oldAgeDataDataItem => oldAgeDataDataItem.type === departmentCategoryMap[item.department_category]);
+      if (hasType) {
+        hasType.value += item.department_ref_old_total;
+      } else {
+        oldAgeData.push({
+          type: departmentCategoryMap[item.department_category],
+          value: item.department_ref_old_total
+        })
+      }
+    });
+    setOldConfig({
+      ...config,
+      data: oldAgeData
+    })
+  }
+  useEffect(() => {
+    if (visitData) {
+      handleYoungAgeData();
+      handleMiddleAgeData();
+      handleOldAgeData();
+    }
+  }, [visitData])
+  return (
   <>
     <div className={styles.title}>
       <div></div>
@@ -71,17 +112,20 @@ const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: Dat
     </div>
     <Row gutter={24} className={styles.ageAnlysis}>
       <Col {...topColResponsiveProps} span={6}>
-        <Pie {...config} className={styles.agePie} />
+        30岁以下
+        <Pie {...youngConfig} className={styles.agePie} />
       </Col>
 
       <Col {...topColResponsiveProps} span={6}>
-        <Pie {...config} className={styles.agePie} />
+        30-50岁
+        <Pie {...middleConfig} className={styles.agePie} />
       </Col>
       <Col {...topColResponsiveProps} span={6}>
-        <Pie {...config} className={styles.agePie} />
+        50岁以上
+        <Pie {...oldConfig} className={styles.agePie} />
       </Col>
     </Row>
   </>
-);
+)};
 
 export default IntroduceRow;

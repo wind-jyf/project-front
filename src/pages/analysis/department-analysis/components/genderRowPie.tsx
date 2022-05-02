@@ -1,6 +1,8 @@
+import { useState, useEffect } from 'react';
 import { Pie } from '@ant-design/charts';
 import { Col, Row } from 'antd';
 import type { DataItem } from '../data';
+import { departmentCategoryMap } from '../../../information/department/consts';
 import styles from '../style.less';
 
 const topColResponsiveProps = {
@@ -40,7 +42,7 @@ const data = [
 ];
 const config: any = {
   appendPadding: 10,
-  data,
+  data: [],
   angleField: 'value',
   colorField: 'type',
   radius: 0.9,
@@ -62,7 +64,55 @@ const config: any = {
   
 };
 
-const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: DataItem[] }) => (
+const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: DataItem[] }) => {
+  const [femaleData, setFemaleData] = useState<any[]>([]);
+  const [femaleConfig, setFemaleConfig] = useState(config);
+  const [maleData, setMaleData] = useState<any[]>([]);
+  const [maleConfig, setMaleConfig] = useState(config);
+
+  const handlFemalData = () => {
+    visitData.forEach((item: any) => {
+      const hasType = femaleData.find(femaleDataItem => femaleDataItem.type === departmentCategoryMap[item.department_category]);
+      if (hasType) {
+        hasType.value += item.department_ref_female_total;
+      } else {
+        femaleData.push({
+          type: departmentCategoryMap[item.department_category],
+          value: item.department_ref_female_total
+        })
+      }
+    });
+    setFemaleConfig({
+      ...config,
+      data: femaleData
+    })
+  }
+
+  const handlMaleData = () => {
+    visitData.forEach((item: any) => {
+      const hasType = maleData.find(maleDataItem => maleDataItem.type === departmentCategoryMap[item.department_category]);
+      if (hasType) {
+        hasType.value += item.department_ref_male_total;
+      } else {
+        maleData.push({
+          type: departmentCategoryMap[item.department_category],
+          value: item.department_ref_male_total
+        })
+      }
+    });
+    setMaleConfig({
+      ...config,
+      data: maleData
+    })
+  }
+
+  useEffect(() => {
+    if (visitData) {
+      handlFemalData();
+      handlMaleData();
+    }
+  }, [visitData]);
+  return (
   <>
     <div className={styles.title}>
       <div></div>
@@ -70,14 +120,16 @@ const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: Dat
     </div>
     <Row gutter={24} className={styles.ageAnlysis}>
       <Col {...topColResponsiveProps} span={12}>
-        <Pie {...config} className={styles.agePie} />
+        男性
+        <Pie {...maleConfig} className={styles.agePie} />
       </Col>
 
       <Col {...topColResponsiveProps} span={12}>
-        <Pie {...config} className={styles.agePie} />
+        女性
+        <Pie {...femaleConfig} className={styles.agePie} />
       </Col>
     </Row>
   </>
-);
+)};
 
 export default IntroduceRow;
