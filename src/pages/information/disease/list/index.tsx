@@ -1,15 +1,10 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, message, Input, Drawer, Select, Form, Modal } from 'antd';
+import { Button, message, Select, Form, Modal } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
-import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
+import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { ModalForm, ProFormText, ProFormTextArea, ProFormSelect} from '@ant-design/pro-form';
-import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
-import ProDescriptions from '@ant-design/pro-descriptions';
-import type { FormValueType } from './components/UpdateForm';
-import UpdateForm from './components/UpdateForm';
-import { rule, addRule, updateRule, removeRule } from './service';
+import { ProFormText, ProFormTextArea } from '@ant-design/pro-form';
 import { getDepartMentList, addDisease, updateDisease, getDiseaseList } from '../service';
 import type { TableListItem, TableListPagination } from './data';
 /**
@@ -19,68 +14,6 @@ import type { TableListItem, TableListPagination } from './data';
  */
 
 const { Option } = Select;
-
-
-const handleAdd = async (fields: TableListItem) => {
-  const hide = message.loading('正在添加');
-
-  try {
-    await addRule({ ...fields });
-    hide();
-    message.success('添加成功');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('添加失败请重试！');
-    return false;
-  }
-};
-/**
- * 更新节点
- *
- * @param fields
- */
-
-const handleUpdate = async (fields: FormValueType, currentRow?: TableListItem) => {
-  const hide = message.loading('正在配置');
-
-  try {
-    await updateRule({
-      ...currentRow,
-      ...fields,
-    });
-    hide();
-    message.success('配置成功');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('配置失败请重试！');
-    return false;
-  }
-};
-/**
- * 删除节点
- *
- * @param selectedRows
- */
-
-const handleRemove = async (selectedRows: TableListItem[]) => {
-  const hide = message.loading('正在删除');
-  if (!selectedRows) return true;
-
-  try {
-    await removeRule({
-      key: selectedRows.map((row) => row.key),
-    });
-    hide();
-    message.success('删除成功，即将刷新');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('删除失败，请重试');
-    return false;
-  }
-};
 
 const TableList: React.FC = () => {
   /** 新建窗口的弹窗 */

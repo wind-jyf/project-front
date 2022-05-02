@@ -1,11 +1,14 @@
 import React, { useRef, useState } from 'react';
 import type { FormInstance } from 'antd';
-import { Card, Result, Button, Descriptions, Divider, Alert, Statistic } from 'antd';
+import { Card, Result, Button, Descriptions, Divider, Form, Statistic, Select } from 'antd';
 import { BreadcrumbProps } from 'antd/lib/breadcrumb';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProForm, { ProFormDigit, ProFormSelect, ProFormText, StepsForm } from '@ant-design/pro-form';
 import type { StepDataType } from './data';
+import { getDepartMentList, getDiseaseList, getMedicineList, addWorkbench } from '../service';
 import styles from './style.less';
+
+const { Option } = Select;
 
 const StepDescriptions: React.FC<{
   stepData: StepDataType;
@@ -58,15 +61,42 @@ const StepResult: React.FC<{
 };
 
 const StepForm: React.FC<Record<string, any>> = () => {
-  const [stepData, setStepData] = useState<StepDataType>({
-    payAccount: 'ant-design@alipay.com',
-    receiverAccount: 'test@example.com',
-    receiverName: 'Alex',
-    amount: '500',
-    receiverMode: 'alipay',
-  });
+  const [step1Data, setStep1Data] = useState<any>();
+  const [step2Data, setStep2Data] = useState<any>();
   const [current, setCurrent] = useState(0);
+  const [departMentOptions, setDepartMentOptions] = useState<any[]>([]);
+  const [medicineOptions, setMedicineOptions] = useState<any[]>([]);
+  const [diseaseOptions, setDiseaseOptions] = useState<any[]>([]);
   const formRef = useRef<FormInstance>();
+  const searchDepartMentList = async () => {
+    const { data = [] } = await getDepartMentList({});
+    setDepartMentOptions(data.map((item: any) => {
+      return {
+        value: item.department_code,
+        text: item.department_name
+      }
+    }))
+  }
+
+  const searchMedicineList = async () => {
+    const { data = [] } = await getMedicineList({});
+    setMedicineOptions(data.map((item: any) => {
+      return {
+        value: item.medicine_code,
+        text: item.medicine_name
+      }
+    }))
+  }
+
+  const searchDiseaseList = async () => {
+    const { data = [] } = await getDiseaseList({});
+    setDiseaseOptions(data.map((item: any) => {
+      return {
+        value: item.disease_code,
+        text: item.disease_name
+      }
+    }))
+  }
 
   const breadCrumb: BreadcrumbProps = {
     routes: [{
@@ -78,6 +108,9 @@ const StepForm: React.FC<Record<string, any>> = () => {
     }]
   }
 
+  const DepartMentOptions = departMentOptions.map(d => <Option key={d.value}>{d.text}</Option>);
+  const MedicineOptions = medicineOptions.map(d => <Option key={d.value}>{d.text}</Option>);
+  const DiseaseOptions = diseaseOptions.map(d => <Option key={d.value}>{d.text}</Option>);
   return (
     <PageContainer title="新增病历" breadcrumb={breadCrumb}>
       <Card bordered={false}>
@@ -96,15 +129,16 @@ const StepForm: React.FC<Record<string, any>> = () => {
           <StepsForm.StepForm<StepDataType>
             formRef={formRef}
             title="填写个人基本信息"
-            initialValues={stepData}
+            initialValues={step1Data}
             onFinish={async (values) => {
-              setStepData(values);
+              console.log(values);
+              setStep1Data(values);
               return true;
             }}
           >
             <ProFormText
               label="姓名"
-              name="name"
+              name="patient_name"
               rules={[
                 { required: true, message: '请填写姓名' },
               ]}
@@ -112,7 +146,7 @@ const StepForm: React.FC<Record<string, any>> = () => {
             />
             <ProFormText
               label="年龄"
-              name="age"
+              name="patient_age"
               rules={[
                 { required: true, message: '请填写年龄' },
               ]}
@@ -120,29 +154,39 @@ const StepForm: React.FC<Record<string, any>> = () => {
             />
             <ProFormSelect
               label="性别"
-              name="gender"
+              name="patient_gender"
               rules={[{ required: true, message: '请选择性别' }]}
               valueEnum={{
                 femal: '女',
                 man: '男',
               }}
             />
-            <ProFormSelect
-              label="性别"
-              name="gender"
-              rules={[{ required: true, message: '请选择性别' }]}
-              valueEnum={{
-                femal: '女',
-                man: '男',
-              }}
+            <ProFormText
+              label="职业"
+              name="patient_job"
+              rules={[
+                { required: true, message: '请填写职业' },
+              ]}
+              placeholder="请填写职业"
             />
           </StepsForm.StepForm>
 
-          <StepsForm.StepForm title="填写病历信息">
+          <StepsForm.StepForm title="填写病历信息"
+            formRef={formRef}
+            initialValues={step2Data}
+            onFinish={async (values) => {
+              setStep2Data(values);
+              await addWorkbench({
+                ...step1Data,
+                ...values
+              })
+              return true;
+            }}
+          >
             <div className={styles.result}>
               <ProFormText
                 label="主诉"
-                name="age"
+                name="main_suit"
                 rules={[
                   { required: true, message: '请填写主诉' },
                 ]}
@@ -150,33 +194,69 @@ const StepForm: React.FC<Record<string, any>> = () => {
               />
               <ProFormText
                 label="病人症状"
-                name="age"
+                name="main_symptom"
                 rules={[
                   { required: true, message: '请填写病人症状' },
                 ]}
                 placeholder="请填写病人症状"
               />
-              <ProFormSelect
-                label="病人所属科室"
-                name="gender"
-                rules={[{ required: true, message: '请选择科室' }]}
-                valueEnum={{
-                  femal: '女',
-                  man: '男',
-                }}
-              />
-              <ProFormSelect
+              <Form.Item
+                style={{ width: '330px' }}
+                name="patient_ref_department"
+                label="疾病所属科室"
+                rules={[
+                  {
+                    required: true,
+                    message: '请选择所属科室',
+                  },
+                ]}
+              >
+                <Select
+                  showSearch
+                  onSearch={searchDepartMentList}
+                >
+                  {DepartMentOptions}
+                </Select>
+              </Form.Item>
+              <Form.Item
+                style={{ width: '330px' }}
+                name="patient_ref_medicine"
                 label="开具药品"
-                name="gender"
-                rules={[{ required: true, message: '请选择药品' }]}
-                valueEnum={{
-                  femal: '女',
-                  man: '男',
-                }}
-              />
+                rules={[
+                  {
+                    required: true,
+                    message: '请选择药品',
+                  },
+                ]}
+              >
+                <Select
+                  showSearch
+                  onSearch={searchMedicineList}
+                >
+                  {MedicineOptions}
+                </Select>
+              </Form.Item>
+              <Form.Item
+                style={{ width: '330px' }}
+                name="patient_ref_disease"
+                label="诊断疾病"
+                rules={[
+                  {
+                    required: true,
+                    message: '请选择诊断疾病',
+                  },
+                ]}
+              >
+                <Select
+                  showSearch
+                  onSearch={searchDiseaseList}
+                >
+                  {DiseaseOptions}
+                </Select>
+              </Form.Item>
               <ProFormText
                 label="医嘱"
-                name="age"
+                name="medical_advice"
                 placeholder="请填写医嘱"
               />
             </div>
@@ -188,7 +268,7 @@ const StepForm: React.FC<Record<string, any>> = () => {
                 formRef.current?.resetFields();
               }}
             >
-              <StepDescriptions stepData={stepData} />
+              <StepDescriptions stepData={step1Data} />
             </StepResult>
           </StepsForm.StepForm>
         </StepsForm>

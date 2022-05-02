@@ -1,149 +1,50 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import type { ProColumns } from '@ant-design/pro-table';
-import ProTable from '@ant-design/pro-table';
-import { Badge, Card, Descriptions, Divider } from 'antd';
+
+import { Card, Descriptions, Divider, message } from 'antd';
 import { BreadcrumbProps } from 'antd/lib/breadcrumb';
-import type { FC } from 'react';
-import React from 'react';
-import { useRequest } from 'umi';
-import type { BasicGood, BasicProgress } from './data';
-import { queryBasicProfile } from './service';
-import styles from './style.less';
+import { FC, useEffect, useState } from 'react';
+import { getWorkbenchById, getDepartMentList, getMedicineList, getDiseaseList } from '../service';
 
-const progressColumns: ProColumns<BasicProgress>[] = [
-  {
-    title: '时间',
-    dataIndex: 'time',
-    key: 'time',
-  },
-  {
-    title: '当前进度',
-    dataIndex: 'rate',
-    key: 'rate',
-  },
-  {
-    title: '状态',
-    dataIndex: 'status',
-    key: 'status',
-    render: (text: React.ReactNode) => {
-      if (text === 'success') {
-        return <Badge status="success" text="成功" />;
-      }
-      return <Badge status="processing" text="进行中" />;
-    },
-  },
+const Basic: FC = (props: any) => {
+ 
+  const { id } = props.location.query;
+  const [workBenchDetailInfo, setWorkBenchDetailInfo] = useState<any>();
+  const [departMentList, setDepartMentList] = useState<any>([]);
+  const [medicineList, setMedicineList] = useState<any>([]);
+  const [diseaseList, setDiseaseList] = useState<any>([]);
 
-  {
-    title: '操作员ID',
-    dataIndex: 'operator',
-    key: 'operator',
-  },
-  {
-    title: '耗时',
-    dataIndex: 'cost',
-    key: 'cost',
-  },
-];
-
-const Basic: FC = () => {
-  const { data, loading } = useRequest(() => {
-    return queryBasicProfile();
-  });
-
-  const { basicGoods, basicProgress } = data || {
-    basicGoods: [],
-    basicProgress: [],
-  };
-  let goodsData: typeof basicGoods = [];
-  if (basicGoods.length) {
-    let num = 0;
-    let amount = 0;
-    basicGoods.forEach((item) => {
-      num += Number(item.num);
-      amount += Number(item.amount);
-    });
-    goodsData = basicGoods.concat({
-      id: '总计',
-      num,
-      amount,
-    });
+  const getWorkBenchDetail = async () => {
+    try {
+      const res = await getWorkbenchById({ id });
+      setWorkBenchDetailInfo(res);
+    } catch (e: any) {
+      message.error(e.message);
+    }
   }
 
-  const renderContent = (value: any, _: any, index: any) => {
-    const obj: {
-      children: any;
-      props: { colSpan?: number };
-    } = {
-      children: value,
-      props: {},
-    };
-    if (index === basicGoods.length) {
-      obj.props.colSpan = 0;
-    }
-    return obj;
-  };
+  const getDepartMent = async () => {
+    const { data } = await getDepartMentList({});
+    setDepartMentList(data);
+  }
 
-  const goodsColumns: ProColumns<BasicGood>[] = [
-    {
-      title: '商品编号',
-      dataIndex: 'id',
-      key: 'id',
-      render: (text: React.ReactNode, _: any, index: number) => {
-        if (index < basicGoods.length) {
-          return <span>{text}</span>;
-        }
-        return {
-          children: <span style={{ fontWeight: 600 }}>总计</span>,
-          props: {
-            colSpan: 4,
-          },
-        };
-      },
-    },
-    {
-      title: '商品名称',
-      dataIndex: 'name',
-      key: 'name',
-      render: renderContent,
-    },
-    {
-      title: '商品条码',
-      dataIndex: 'barcode',
-      key: 'barcode',
-      render: renderContent,
-    },
-    {
-      title: '单价',
-      dataIndex: 'price',
-      key: 'price',
-      align: 'right' as 'left' | 'right' | 'center',
-      render: renderContent,
-    },
-    {
-      title: '数量（件）',
-      dataIndex: 'num',
-      key: 'num',
-      align: 'right' as 'left' | 'right' | 'center',
-      render: (text: React.ReactNode, _: any, index: number) => {
-        if (index < basicGoods.length) {
-          return text;
-        }
-        return <span style={{ fontWeight: 600 }}>{text}</span>;
-      },
-    },
-    {
-      title: '金额',
-      dataIndex: 'amount',
-      key: 'amount',
-      align: 'right' as 'left' | 'right' | 'center',
-      render: (text: React.ReactNode, _: any, index: number) => {
-        if (index < basicGoods.length) {
-          return text;
-        }
-        return <span style={{ fontWeight: 600 }}>{text}</span>;
-      },
-    },
-  ];
+  const getMedicine = async () => {
+    const { data } = await getMedicineList({});
+    setMedicineList(data);
+  }
+
+  const getDisease = async () => {
+    const { data } = await getDiseaseList({});
+    setDiseaseList(data);
+  }
+
+  useEffect(() => {
+    if (id) {
+      getWorkBenchDetail();
+      getDepartMent();
+      getMedicine();
+      getDisease();
+    }
+  }, [id]);
   const breadCrumb: BreadcrumbProps = {
     routes: [{
       breadcrumbName: '医生工作台',
@@ -158,17 +59,19 @@ const Basic: FC = () => {
     <PageContainer title="病历详情" breadcrumb={breadCrumb}>
       <Card bordered={false}>
         <Descriptions title="病人基本信息" style={{ marginBottom: 32 }}>
-          <Descriptions.Item label="姓名">1000000000</Descriptions.Item>
-          <Descriptions.Item label="性别">已取货</Descriptions.Item>
-          <Descriptions.Item label="年龄">1234123421</Descriptions.Item>
+          <Descriptions.Item label="姓名">{workBenchDetailInfo?.patient_name}</Descriptions.Item>
+          <Descriptions.Item label="性别">{workBenchDetailInfo?.patient_gender}</Descriptions.Item>
+          <Descriptions.Item label="年龄">{workBenchDetailInfo?.patient_age}</Descriptions.Item>
+          <Descriptions.Item label="职业">{workBenchDetailInfo?.patient_job}</Descriptions.Item>
         </Descriptions>
         <Divider style={{ marginBottom: 32 }} />
         <Descriptions title="病历信息" style={{ marginBottom: 32 }} layout="vertical">
-          <Descriptions.Item label="主诉">付小小</Descriptions.Item>
-          <Descriptions.Item label="病人症状">18100000000</Descriptions.Item>
-          <Descriptions.Item label="所属科室">菜鸟仓储</Descriptions.Item>
-          <Descriptions.Item label="使用药品">浙江省杭州市西湖区万塘路18号</Descriptions.Item>
-          <Descriptions.Item label="医嘱">无</Descriptions.Item>
+          <Descriptions.Item label="主诉">{workBenchDetailInfo?.main_suit}</Descriptions.Item>
+          <Descriptions.Item label="病人症状">{workBenchDetailInfo?.main_symptom}</Descriptions.Item>
+          <Descriptions.Item label="所属科室">{departMentList.find((item: any) => item.department_code === workBenchDetailInfo?.patient_ref_department)?.department_name}</Descriptions.Item>
+          <Descriptions.Item label="使用药品">{medicineList.find((item: any) => item.medicine_code === workBenchDetailInfo?.patient_ref_medicine)?.medicine_name}</Descriptions.Item>
+          <Descriptions.Item label="确诊疾病">{diseaseList.find((item: any) => item.disease_code === workBenchDetailInfo?.patient_ref_disease)?.disease_name}</Descriptions.Item>
+          <Descriptions.Item label="医嘱">{workBenchDetailInfo?.medical_advice}</Descriptions.Item>
         </Descriptions>
       </Card>
     </PageContainer>
