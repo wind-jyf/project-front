@@ -35,6 +35,10 @@ export default defineConfig({
   // umi routes: https://umijs.org/docs/routing
   routes: [
     {
+      path: '/',
+      redirect: '/homepage'
+    }, 
+    {
       path: '/user',
       layout: false,
       routes: [

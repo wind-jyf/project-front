@@ -5,7 +5,7 @@ import { history } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
-
+import { checkLogin } from './service';
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 
@@ -33,7 +33,7 @@ export async function getInitialState(): Promise<{
   };
   // 如果是登录页面，不执行
   if (history.location.pathname !== loginPath) {
-    // const currentUser = await fetchUserInfo();
+    const currentUser = await fetchUserInfo();
     return {
       fetchUserInfo,
       currentUser: {},
@@ -55,12 +55,15 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
       content: initialState?.currentUser?.name,
     },
     footerRender: () => <Footer />,
-    onPageChange: () => {
+    onPageChange: async () => {
       const { location } = history;
       // 如果没有登录，重定向到 login
-      // if (!initialState?.currentUser && location.pathname !== loginPath) {
-      //   history.push(loginPath);
-      // }
+      const { data } = await checkLogin({
+        jwt: window.localStorage.getItem('jwt') || ''
+      });
+      if (location.pathname !== loginPath && !data.login) {
+        history.push(loginPath);
+      }
     },
     links: [],
     menuHeaderRender: undefined,
