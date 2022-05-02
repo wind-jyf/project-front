@@ -7,7 +7,7 @@ import IntroduceRow from './components/IntroduceRow';
 import SalesCard from './components/SalesCard';
 import MedicineUse from './components/medicineUse';
 import { useRequest } from 'umi';
-import { fakeChartData } from './service';
+import { getMedicineAnalysis, getMedicineList } from './service';
 import PageLoading from './components/PageLoading';
 import type { TimeType } from './components/SalesCard';
 import { getTimeDistance } from './utils/utils';
@@ -23,7 +23,8 @@ const HomePage: React.FC = () => {
     getTimeDistance('year'),
   );
 
-  const { loading, data } = useRequest(fakeChartData);
+  const { loading: listLoading, data: list } = useRequest(getMedicineList);
+  const { loading: analysisLoading, data: analysisData } = useRequest(getMedicineAnalysis);
 
   const selectDate = (type: TimeType) => {
     setRangePickerValue(getTimeDistance(type));
@@ -55,9 +56,9 @@ const HomePage: React.FC = () => {
 
   let salesPieData;
   if (salesType === 'all') {
-    salesPieData = data?.salesTypeData;
+    salesPieData = list?.salesTypeData;
   } else {
-    salesPieData = salesType === 'online' ? data?.salesTypeDataOnline : data?.salesTypeDataOffline;
+    salesPieData = salesType === 'online' ? list?.salesTypeDataOnline : list?.salesTypeDataOffline;
   }
 
   const visitsNumber = [{
@@ -83,18 +84,18 @@ const HomePage: React.FC = () => {
         <Suspense fallback={null}>
             <SalesCard
               rangePickerValue={rangePickerValue}
-              salesData={data?.salesData || visitsNumber}
+              salesData={visitsNumber}
               isActive={isActive}
               handleRangePickerChange={handleRangePickerChange}
-              loading={loading}
+              loading={listLoading}
               selectDate={selectDate}
             />
         </Suspense>
         <Suspense fallback={<PageLoading />}>
-          <IntroduceRow loading={loading} visitData={data?.visitData || []} />
+          <IntroduceRow loading={listLoading} visitData={list || []} />
         </Suspense>
         <Suspense fallback={<PageLoading />}>
-          <MedicineUse loading={loading} visitData={data?.visitData || []} />
+          <MedicineUse loading={analysisLoading} visitData={analysisData || []} />
         </Suspense>
       </>
     </GridContent>

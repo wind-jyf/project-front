@@ -1,22 +1,17 @@
 import { Card, message } from 'antd';
 import ProForm, {
-  ProFormDateRangePicker,
-  ProFormDependency,
-  ProFormDigit,
-  ProFormRadio,
   ProFormSelect,
   ProFormText,
   ProFormTextArea,
 } from '@ant-design/pro-form';
-import { useRequest } from 'umi';
+import { useRequest, history } from 'umi';
 import type { FC } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import { BreadcrumbProps } from 'antd/lib/breadcrumb';
-import { fakeSubmitForm } from './service';
-import styles from './style.less';
+import { predictAnalysis } from '../service';
 
 const BasicForm: FC<Record<string, any>> = () => {
-  const { run } = useRequest(fakeSubmitForm, {
+  const { run } = useRequest(predictAnalysis, {
     manual: true,
     onSuccess: () => {
       message.success('提交成功');
@@ -24,7 +19,8 @@ const BasicForm: FC<Record<string, any>> = () => {
   });
 
   const onFinish = async (values: Record<string, any>) => {
-    run(values);
+    const data = await run(values);
+    history.push(`/analysis/disease-analysis/result?disease_code=${data}`);
   };
 
   const breadCrumb: BreadcrumbProps = {
@@ -54,26 +50,26 @@ const BasicForm: FC<Record<string, any>> = () => {
           <ProFormSelect
             label="性别"
             width="md"
-            name="性别"
+            name="patient_gender"
             options={[
               {
-                value: '1',
-                label: '同事甲',
+                value: 'femal',
+                label: '女',
               },
               {
-                value: '2',
-                label: '同事乙',
+                value: 'man',
+                label: '男',
               }
             ]}
           />
           <ProFormText
             width="md"
             label="年龄"
-            name="title"
+            name="patient_age"
             rules={[
               {
                 required: true,
-                message: '请输入标题',
+                message: '请输入年龄',
               },
             ]}
             placeholder="请输入年龄"
@@ -81,7 +77,7 @@ const BasicForm: FC<Record<string, any>> = () => {
           <ProFormText
             width="md"
             label="职业"
-            name="title"
+            name="patient_job"
             rules={[
               {
                 required: true,
@@ -93,7 +89,7 @@ const BasicForm: FC<Record<string, any>> = () => {
           <ProFormTextArea
             label="主诉症状"
             width="xl"
-            name="goal"
+            name="main_suit"
             rules={[
               {
                 required: true,

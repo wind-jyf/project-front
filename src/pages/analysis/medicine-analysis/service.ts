@@ -1,6 +1,17 @@
-import { request } from 'umi';
-import type { AnalysisData } from './data';
+import { request } from "@/utils/http";
 
-export async function fakeChartData(): Promise<{ data: AnalysisData }> {
-  return request('/api/fake_analysis_chart_data');
+export async function getMedicineAnalysis(data: any) {
+const res: any = await request("/medicine_analysis", {
+    method: "get",
+    data,
+});
+    return res.data;
 }
+
+export async function getMedicineList(data: any) {
+  const res: any = await request("/medicine", {
+      method: "get",
+      data,
+  });
+      return res.data;
+  }

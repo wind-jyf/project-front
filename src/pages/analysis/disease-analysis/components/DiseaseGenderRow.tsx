@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Pie } from '@ant-design/charts';
 import { Col, Row, Button } from 'antd';
 import { history } from 'umi';
@@ -13,35 +14,9 @@ const topColResponsiveProps = {
   style: { marginBottom: 24 },
 };
 
-const data = [
-  {
-    type: '分类一',
-    value: 27,
-  },
-  {
-    type: '分类二',
-    value: 25,
-  },
-  {
-    type: '分类三',
-    value: 18,
-  },
-  {
-    type: '分类四',
-    value: 15,
-  },
-  {
-    type: '分类五',
-    value: 10,
-  },
-  {
-    type: '其他',
-    value: 5,
-  },
-];
 const config: any = {
   appendPadding: 10,
-  data,
+  data: [],
   angleField: 'value',
   colorField: 'type',
   radius: 0.9,
@@ -64,6 +39,53 @@ const config: any = {
 };
 
 const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: DataItem[] }) => {
+  const [femaleData, setFemaleData] = useState<any[]>([]);
+  const [femaleConfig, setFemaleConfig] = useState(config);
+  const [maleData, setMaleData] = useState<any[]>([]);
+  const [maleConfig, setMaleConfig] = useState(config);
+
+  const handlFemalData = () => {
+    visitData.forEach((item: any) => {
+      const hasType = femaleData.find(femaleDataItem => femaleDataItem.type === item.disease_name);
+      if (hasType) {
+        hasType.value += item.disease_ref_female_total;
+      } else {
+        femaleData.push({
+          type: item.disease_name,
+          value: item.disease_ref_female_total
+        })
+      }
+    });
+    setFemaleConfig({
+      ...config,
+      data: femaleData
+    })
+  }
+
+  const handlMaleData = () => {
+    visitData.forEach((item: any) => {
+      const hasType = maleData.find(maleDataItem => maleDataItem.type === item.disease_name);
+      if (hasType) {
+        hasType.value += item.disease_ref_male_total;
+      } else {
+        maleData.push({
+          type: item.disease_name,
+          value: item.disease_ref_male_total
+        })
+      }
+    });
+    setMaleConfig({
+      ...config,
+      data: maleData
+    })
+  }
+
+  useEffect(() => {
+    if (visitData) {
+      handlFemalData();
+      handlMaleData();
+    }
+  }, [visitData]);
   const handleGoAnalysis = () => {
     history.push('/analysis/disease-analysis/add');
   };
@@ -78,10 +100,12 @@ const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: Dat
     
       <Row gutter={24} className={styles.diseaseAnalysis}>
         <Col {...topColResponsiveProps} span={6}>
-            <Pie {...config} />
+          男性
+          <Pie {...maleConfig} />
         </Col>
         <Col {...topColResponsiveProps} span={6}>
-            <Pie {...config} />
+          女性
+          <Pie {...femaleConfig} />
         </Col>
       </Row>
     </>)

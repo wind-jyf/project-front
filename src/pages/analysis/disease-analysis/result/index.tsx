@@ -1,66 +1,55 @@
-import { DingdingOutlined } from '@ant-design/icons';
-import { Button, Card, Steps, Result, Descriptions } from 'antd';
+import { useEffect, useState } from 'react';
+import { Button, Card, Result } from 'antd';
 import { Fragment } from 'react';
 import { GridContent } from '@ant-design/pro-layout';
+import { history } from 'umi';
+import { getDiseaseByDiseaseCode, getDepartMentList } from '../service';
 
 import styles from './index.less';
 
-const { Step } = Steps;
-
-const desc1 = (
-  <div className={styles.title}>
-    <div style={{ margin: '8px 0 4px' }}>
-      <span>曲丽丽</span>
-      <DingdingOutlined style={{ marginLeft: 8, color: '#00A0E9' }} />
+export default (props: any) => {
+  const { disease_code } = props.location.query;
+  const [disease, setDisease] = useState<any>();
+  const [departMentList, setDepartMentList] = useState<any[]>([]);
+  const getDiseaseDetail = async () => {
+    const res = await getDiseaseByDiseaseCode({
+      disease_code
+    })
+    setDisease(res);
+  }
+  const getDepartMent = async () => {
+    const { data } = await getDepartMentList({});
+    setDepartMentList(data);
+  }
+  useEffect(() => {
+    if (disease_code) {
+      getDiseaseDetail();
+      getDepartMent();
+    }
+  }, [disease_code])
+  const extra = (
+    <Fragment>
+      <Button type="primary" onClick={() => {
+        history.replace('/analysis/disease-analysis');
+      }}>返回</Button>
+    </Fragment>
+  );
+  const content = (
+    <div
+      className={styles.diseaseDetail}
+    >
+      <div><span style={{ marginRight: '10px' }}>预测疾病:</span> {disease?.disease_name || ''}</div>
+      <div><span style={{ marginRight: '10px' }}>疾病描述:</span> {disease?.disease_description || ''}</div>
+      <div><span style={{ marginRight: '10px' }}>疾病关联科室:</span>{departMentList.find(item => item.department_code === disease?.disease_ref_department)?.department_name || ''}</div>
     </div>
-    <div>2016-12-12 12:32</div>
-  </div>
-);
-
-const desc2 = (
-  <div style={{ fontSize: 12 }} className={styles.title}>
-    <div style={{ margin: '8px 0 4px' }}>
-      <span>周毛毛</span>
-      <a href="">
-        <DingdingOutlined style={{ color: '#00A0E9', marginLeft: 8 }} />
-        <span>催一下</span>
-      </a>
-    </div>
-  </div>
-);
-
-const content = (
-  <>
-    <Descriptions title="项目名称">
-      <Descriptions.Item label="项目 ID">23421</Descriptions.Item>
-      <Descriptions.Item label="负责人">曲丽丽</Descriptions.Item>
-      <Descriptions.Item label="生效时间">2016-12-12 ~ 2017-12-12</Descriptions.Item>
-    </Descriptions>
-    <br />
-    <Steps progressDot current={1}>
-      <Step title={<span style={{ fontSize: 14 }}>创建项目</span>} description={desc1} />
-      <Step title={<span style={{ fontSize: 14 }}>部门初审</span>} description={desc2} />
-      <Step title={<span style={{ fontSize: 14 }}>财务复核</span>} />
-      <Step title={<span style={{ fontSize: 14 }}>完成</span>} />
-    </Steps>
-  </>
-);
-
-const extra = (
-  <Fragment>
-    <Button type="primary">返回列表</Button>
-    <Button>查看项目</Button>
-    <Button>打印</Button>
-  </Fragment>
-);
-
-export default () => (
+  );
+  return (
   <GridContent>
     <Card bordered={false}>
       <Result
         status="success"
         title="预测成功"
-        subTitle="提交结果页用于反馈一系列操作任务的处理结果， 如果仅是简单操作，使用 Message 全局提示反馈即可。 本文字区域可以展示简单的补充说明，如果有类似展示 “单据”的需求，下面这个灰色区域可以呈现比较复杂的内容。"
+        subTitle="此结果预测是根据医生工作台处的数据来进行分析"
         extra={extra}
         style={{ marginBottom: 16 }}
       >
@@ -68,4 +57,4 @@ export default () => (
       </Result>
     </Card>
   </GridContent>
-);
+)};

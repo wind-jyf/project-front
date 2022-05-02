@@ -7,7 +7,7 @@ import IntroduceRow from './components/IntroduceRow';
 import DiseaseGenderRow from './components/DiseaseGenderRow';
 import { useRequest } from 'umi';
 
-import { fakeChartData } from './service';
+import { getDiseaseAnalysis } from './service';
 import PageLoading from './components/PageLoading';
 import type { TimeType } from './components/SalesCard';
 import { getTimeDistance } from './utils/utils';
@@ -23,7 +23,7 @@ const HomePage: React.FC = () => {
     getTimeDistance('year'),
   );
 
-  const { loading, data } = useRequest(fakeChartData);
+  const { loading, data } = useRequest(getDiseaseAnalysis);
 
   const selectDate = (type: TimeType) => {
     setRangePickerValue(getTimeDistance(type));
@@ -60,31 +60,14 @@ const HomePage: React.FC = () => {
     salesPieData = salesType === 'online' ? data?.salesTypeDataOnline : data?.salesTypeDataOffline;
   }
 
-  const visitsNumber = [{
-    x: '2022-3-1',
-    y: 100
-  }, {
-    x: '2022-3-2',
-    y: 290
-  }, {
-    x: '2022-3-3',
-    y: 350
-  }, {
-    x: '2022-3-4',
-    y: 420
-  }, {
-    x: '2022-3-5',
-    y: 550
-  }]
-
   return (
     <GridContent>
       <>
         <Suspense fallback={<PageLoading />}>
-          <IntroduceRow loading={loading} visitData={data?.visitData || []} />
+          <IntroduceRow loading={loading} visitData={data || []} />
         </Suspense>
         <Suspense fallback={<PageLoading />}>
-          <DiseaseGenderRow loading={loading} visitData={data?.visitData || []} />
+          <DiseaseGenderRow loading={loading} visitData={data || []} />
         </Suspense>
       </>
     </GridContent>

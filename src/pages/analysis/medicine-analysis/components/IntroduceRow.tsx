@@ -1,6 +1,8 @@
+import { useState, useEffect } from 'react';
 import { Pie } from '@ant-design/charts';
 import { Col, Row } from 'antd';
 import type { DataItem } from '../data.d';
+import { medicineCategoryMap } from '../../../information/medicine/constants';
 import styles from '../style.less';
 
 const data = [
@@ -31,7 +33,7 @@ const data = [
 ];
 const config: any = {
   appendPadding: 10,
-  data,
+  data: [],
   angleField: 'value',
   colorField: 'type',
   radius: 0.9,
@@ -62,7 +64,40 @@ const topColResponsiveProps = {
   style: { marginBottom: 24 },
 };
 
-const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: DataItem[] }) => (
+const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: DataItem[] }) => {
+  const [priceData, setPriceData] = useState<any[]>([]);
+  const [priceConfig, setPriceConfig] = useState(config);
+
+  const handlPriceData = () => {
+    visitData.forEach((item: any) => {
+      const hasType = priceData.find(priceDataItem => priceDataItem.type === medicineCategoryMap[item.medicine_category]);
+      if (hasType) {
+        // hasType.value += item.department_ref_female_total;
+      } else {
+        let count = 0;
+        const sum = visitData.reduce((pre: number, current: any) => {
+          if (current.medicine_category === item.medicine_category) {
+            count++;
+            return pre += current.medicine_price;
+          }
+        }, 0);
+        priceData.push({
+          type: medicineCategoryMap[item.medicine_category],
+          value: sum / count
+        })
+      }
+    });
+    setPriceConfig({
+      ...config,
+      data: priceData
+    })
+  }
+  useEffect(() => {
+    if (visitData) {
+      handlPriceData();
+    }
+  }, [visitData]);
+  return (
   <>
     <div className={styles.title}>
       <div></div>
@@ -70,10 +105,10 @@ const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: Dat
     </div>
     <Row gutter={24} className={styles.medicineRow}>
       <Col {...topColResponsiveProps} span={24}>
-        <Pie {...config} className={styles.agePie} />
+        <Pie {...priceConfig} className={styles.agePie} />
       </Col>
     </Row>
   </>
-);
+)};
 
 export default IntroduceRow;

@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Pie } from '@ant-design/charts';
 import { Col, Row, Button } from 'antd';
 import { history } from 'umi';
@@ -41,7 +42,7 @@ const data = [
 ];
 const config: any = {
   appendPadding: 10,
-  data,
+  data: [],
   angleField: 'value',
   colorField: 'type',
   radius: 0.9,
@@ -64,6 +65,70 @@ const config: any = {
 };
 
 const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: DataItem[] }) => {
+  const [youngAgeData, setYoungAgeData] = useState<any[]>([]);
+  const [youngConfig, setYoungConfig] = useState(config);
+  const [middleAgeData, setMiddleAgeData] = useState<any[]>([]);
+  const [middleConfig, setMiddleConfig] = useState(config);
+  const [oldAgeData, setOldAgeData] = useState<any[]>([]);
+  const [oldConfig, setOldConfig] = useState(config);
+  const handleYoungAgeData = () => {
+    visitData.forEach((item: any) => {
+      const hasType = youngAgeData.find(youngAgeDataDataItem => youngAgeDataDataItem.type === item.disease_name);
+      if (hasType) {
+        hasType.value += item.disease_ref_youth_total;
+      } else {
+        youngAgeData.push({
+          type: item.disease_name,
+          value: item.disease_ref_youth_total
+        })
+      }
+    });
+    setYoungConfig({
+      ...config,
+      data: youngAgeData
+    })
+  }
+  const handleMiddleAgeData = () => {
+    visitData.forEach((item: any) => {
+      const hasType = middleAgeData.find(middleAgeDataDataItem => middleAgeDataDataItem.type === item.disease_name);
+      if (hasType) {
+        hasType.value += item.disease_ref_middle_total;
+      } else {
+        middleAgeData.push({
+          type: item.disease_name,
+          value: item.disease_ref_middle_total
+        })
+      }
+    });
+    setMiddleConfig({
+      ...config,
+      data: middleAgeData
+    })
+  }
+  const handleOldAgeData = () => {
+    visitData.forEach((item: any) => {
+      const hasType = oldAgeData.find(oldAgeDataDataItem => oldAgeDataDataItem.type === item.disease_name);
+      if (hasType) {
+        hasType.value += item.disease_ref_old_total;
+      } else {
+        oldAgeData.push({
+          type: item.disease_name,
+          value: item.disease_ref_old_total
+        })
+      }
+    });
+    setOldConfig({
+      ...config,
+      data: oldAgeData
+    })
+  }
+  useEffect(() => {
+    if (visitData) {
+      handleYoungAgeData();
+      handleMiddleAgeData();
+      handleOldAgeData();
+    }
+  }, [visitData])
   const handleGoAnalysis = () => {
     history.push('/analysis/disease-analysis/add');
   };
@@ -79,13 +144,16 @@ const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: Dat
     
       <Row gutter={24} className={styles.diseaseAnalysis}>
         <Col {...topColResponsiveProps} span={6}>
-            <Pie {...config} />
+          30岁以下
+          <Pie {...youngConfig} />
         </Col>
         <Col {...topColResponsiveProps} span={6}>
-            <Pie {...config} />
+          30-50岁
+          <Pie {...middleConfig} />
         </Col>
         <Col {...topColResponsiveProps} span={6}>
-            <Pie {...config} />
+          50岁以上
+          <Pie {...oldConfig} />
         </Col>
       </Row>
     </>)
