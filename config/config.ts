@@ -71,13 +71,13 @@ export default defineConfig({
     },
     {
       path: '/homepage',
-      icon: 'form',
+      icon: 'BankTwoTone',
       name: '首页',
       component: './homepage'
     },
     {
       path: '/workbench',
-      icon: 'form',
+      icon: 'AppstoreTwoTone',
       name: '医生工作台',
       routes: [
         {
@@ -101,7 +101,7 @@ export default defineConfig({
     },
     {
       path: '/information',
-      icon: 'form',
+      icon: 'MailTwoTone',
       name: '信息维护',
       routes: [
         {
@@ -146,7 +146,7 @@ export default defineConfig({
     },
     {
       path: '/analysis',
-      icon: 'form',
+      icon: 'PieChartTwoTone',
       name: '数据分析',
       routes: [
         {
@@ -183,8 +183,8 @@ export default defineConfig({
     },
     {
       path: '/download',
-      icon: 'form',
-      name: '数据下载',
+      icon: 'ApiTwoTone',
+      name: '算法准确度',
       component: './download/list'
     },
     {

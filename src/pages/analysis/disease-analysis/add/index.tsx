@@ -8,6 +8,7 @@ import { useRequest, history } from 'umi';
 import type { FC } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import { BreadcrumbProps } from 'antd/lib/breadcrumb';
+import { genderOptions } from '@/utils/constants';
 import { predictAnalysis } from '../service';
 
 const BasicForm: FC<Record<string, any>> = () => {
@@ -51,16 +52,7 @@ const BasicForm: FC<Record<string, any>> = () => {
             label="性别"
             width="md"
             name="patient_gender"
-            options={[
-              {
-                value: 'femal',
-                label: '女',
-              },
-              {
-                value: 'man',
-                label: '男',
-              }
-            ]}
+            options={genderOptions}
           />
           <ProFormText
             width="md"

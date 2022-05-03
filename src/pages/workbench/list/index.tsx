@@ -1,10 +1,11 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, message, Input, Drawer } from 'antd';
-import React, { useState, useRef } from 'react';
+import { Button } from 'antd';
+import React, {  useRef } from 'react';
 import { history } from 'umi';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
+import { genderMap } from '@/utils/constants';
 import type { TableListItem, TableListPagination } from './data';
 import { getWorkbenchList } from '../service';
 
@@ -28,6 +29,7 @@ const TableList: React.FC = () => {
       dataIndex: 'patient_gender',
       sorter: true,
       hideInForm: true,
+      render: (value: any) => genderMap[value]
     },
     {
       title: '年龄',
