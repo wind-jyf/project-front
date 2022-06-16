@@ -53,18 +53,6 @@ export default defineConfig({
           redirect: '/user/login',
         },
         {
-          name: 'register-result',
-          icon: 'smile',
-          path: '/user/register-result',
-          component: './user/register-result',
-        },
-        {
-          name: 'register',
-          icon: 'smile',
-          path: '/user/register',
-          component: './user/register',
-        },
-        {
           component: '404',
         },
       ],
@@ -134,14 +122,6 @@ export default defineConfig({
           path: '/information/disease/list',
           component: './information/disease/list',
         },
-        {
-          path: '/information/disease/add',
-          component: './information/disease/add',
-        },
-        {
-          path: '/information/disease/detail',
-          component: './information/disease/detail',
-        },
       ],
     },
     {
@@ -186,10 +166,6 @@ export default defineConfig({
       icon: 'ApiTwoTone',
       name: '算法准确度',
       component: './download/list'
-    },
-    {
-      path: '/',
-      redirect: '/dashboard/analysis',
     },
     {
       component: '404',

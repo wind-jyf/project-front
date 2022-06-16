@@ -145,6 +145,7 @@ const TableList: React.FC = () => {
           ]}
           width="md"
           name="disease_code"
+          disabled={!!currentRow}
         />
         <ProFormText
           label="疾病名称"

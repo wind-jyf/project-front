@@ -48,12 +48,14 @@ const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: Dat
   const [oldConfig, setOldConfig] = useState(config);
   const handleYoungAgeData = () => {
     visitData.forEach((item: any) => {
-      const hasType = youngAgeData.find(youngAgeDataDataItem => youngAgeDataDataItem.type === departmentCategoryMap[item.department_category]);
+      // const hasType = youngAgeData.find(youngAgeDataDataItem => youngAgeDataDataItem.type === departmentCategoryMap[item.department_category]);
+      const hasType = youngAgeData.find(youngAgeDataDataItem => youngAgeDataDataItem.type === item.department_name);
       if (hasType) {
         hasType.value += item.department_ref_youth_total;
       } else {
         youngAgeData.push({
-          type: departmentCategoryMap[item.department_category],
+          // type: departmentCategoryMap[item.department_category],
+          type: item.department_name,
           value: item.department_ref_youth_total
         })
       }
@@ -65,12 +67,12 @@ const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: Dat
   }
   const handleMiddleAgeData = () => {
     visitData.forEach((item: any) => {
-      const hasType = middleAgeData.find(middleAgeDataDataItem => middleAgeDataDataItem.type === departmentCategoryMap[item.department_category]);
+      const hasType = middleAgeData.find(middleAgeDataDataItem => middleAgeDataDataItem.type === item.department_name);
       if (hasType) {
         hasType.value += item.department_ref_middle_total;
       } else {
         middleAgeData.push({
-          type: departmentCategoryMap[item.department_category],
+          type: item.department_name,
           value: item.department_ref_middle_total
         })
       }
@@ -82,12 +84,12 @@ const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: Dat
   }
   const handleOldAgeData = () => {
     visitData.forEach((item: any) => {
-      const hasType = oldAgeData.find(oldAgeDataDataItem => oldAgeDataDataItem.type === departmentCategoryMap[item.department_category]);
+      const hasType = oldAgeData.find(oldAgeDataDataItem => oldAgeDataDataItem.type === item.department_name);
       if (hasType) {
         hasType.value += item.department_ref_old_total;
       } else {
         oldAgeData.push({
-          type: departmentCategoryMap[item.department_category],
+          type: item.department_name,
           value: item.department_ref_old_total
         })
       }

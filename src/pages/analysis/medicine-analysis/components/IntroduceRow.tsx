@@ -72,18 +72,19 @@ const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: Dat
     visitData.forEach((item: any) => {
       const hasType = priceData.find(priceDataItem => priceDataItem.type === medicineCategoryMap[item.medicine_category]);
       if (hasType) {
-        // hasType.value += item.department_ref_female_total;
       } else {
         let count = 0;
         const sum = visitData.reduce((pre: number, current: any) => {
           if (current.medicine_category === item.medicine_category) {
             count++;
-            return pre += current.medicine_price;
+            return pre += (current.medicine_price || 0);
+          } else {
+            return pre;
           }
         }, 0);
         priceData.push({
           type: medicineCategoryMap[item.medicine_category],
-          value: sum / count
+          value: sum / count,
         })
       }
     });

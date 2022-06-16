@@ -13,33 +13,6 @@ const topColResponsiveProps = {
   xl: 12,
   style: { marginBottom: 24 },
 };
-
-const data = [
-  {
-    type: '分类一',
-    value: 27,
-  },
-  {
-    type: '分类二',
-    value: 25,
-  },
-  {
-    type: '分类三',
-    value: 18,
-  },
-  {
-    type: '分类四',
-    value: 15,
-  },
-  {
-    type: '分类五',
-    value: 10,
-  },
-  {
-    type: '其他',
-    value: 5,
-  },
-];
 const config: any = {
   appendPadding: 10,
   data: [],
@@ -72,12 +45,12 @@ const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: Dat
 
   const handlFemalData = () => {
     visitData.forEach((item: any) => {
-      const hasType = femaleData.find(femaleDataItem => femaleDataItem.type === departmentCategoryMap[item.department_category]);
+      const hasType = femaleData.find(femaleDataItem => femaleDataItem.type === item.department_name);
       if (hasType) {
         hasType.value += item.department_ref_female_total;
       } else {
         femaleData.push({
-          type: departmentCategoryMap[item.department_category],
+          type: item.department_name,
           value: item.department_ref_female_total
         })
       }
@@ -90,12 +63,12 @@ const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: Dat
 
   const handlMaleData = () => {
     visitData.forEach((item: any) => {
-      const hasType = maleData.find(maleDataItem => maleDataItem.type === departmentCategoryMap[item.department_category]);
+      const hasType = maleData.find(maleDataItem => maleDataItem.type === item.department_name);
       if (hasType) {
         hasType.value += item.department_ref_male_total;
       } else {
         maleData.push({
-          type: departmentCategoryMap[item.department_category],
+          type: item.department_name,
           value: item.department_ref_male_total
         })
       }

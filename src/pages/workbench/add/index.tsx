@@ -131,7 +131,6 @@ const StepForm: React.FC<Record<string, any>> = () => {
             title="填写个人基本信息"
             initialValues={step1Data}
             onFinish={async (values) => {
-              console.log(values);
               setStep1Data(values);
               return true;
             }}
@@ -265,7 +264,7 @@ const StepForm: React.FC<Record<string, any>> = () => {
             <StepResult
               onFinish={async () => {
                 setCurrent(0);
-                formRef.current?.resetFields();
+                window.location.reload();
               }}
             >
               <StepDescriptions stepData={step1Data} />
@@ -275,14 +274,6 @@ const StepForm: React.FC<Record<string, any>> = () => {
         <Divider style={{ margin: '40px 0 24px' }} />
         <div className={styles.desc}>
           <h3>说明</h3>
-          <h4>转账到支付宝账户</h4>
-          <p>
-            如果需要，这里可以放一些关于产品的常见问题说明。如果需要，这里可以放一些关于产品的常见问题说明。如果需要，这里可以放一些关于产品的常见问题说明。
-          </p>
-          <h4>转账到银行卡</h4>
-          <p>
-            如果需要，这里可以放一些关于产品的常见问题说明。如果需要，这里可以放一些关于产品的常见问题说明。如果需要，这里可以放一些关于产品的常见问题说明。
-          </p>
         </div>
       </Card>
     </PageContainer>
